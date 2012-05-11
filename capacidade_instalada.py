@@ -1,0 +1,72 @@
+# -*- coding: cp1252 -*-
+import os
+import re
+from sisposbase.sispos import BaseSISPOS
+
+
+class CapacidadeInstalada(BaseSISPOS):
+    findfiles = ( ("HTOT","HTOT"),
+                  ("HEFET","HEFET"),
+                  ("HDISP","HDISP"), 
+                  ("#MES","Mes (FORMATO: MM)"),
+                  ("#ANO","Ano (FORMATO: AAAA)") )
+
+    def process (self, f):
+        global b
+
+        # Strip newlines and carriage returns
+        f['HTOT'] = re.sub(r'[\r\n]', ' ', f['HTOT'])
+        f['HEFET'] = re.sub(r'[\r\n]', ' ', f['HEFET'])
+        f['HDISP'] = re.sub(r'[\r\n]', ' ', f['HDISP'])
+        
+        # Horas totais
+        ipcuc_htot = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
+        ipf_htot = float(re.search(r'ipf.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
+        icq_htot = float(re.search(r'icq.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
+        fech_htot = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HTOT']).group(1)
+
+        # Horas efetivas
+        ipcuc_hefet = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
+        ipf_hefet = float(re.search(r'ipf.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
+        icq_hefet = float(re.search(r'icq.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
+        fech_hefet = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HEFET']).group(1)
+
+        # Horas disp
+        ipcuc_hdisp = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
+        ipf_hdisp = float(re.search(r'ipf.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
+        icq_hdisp = float(re.search(r'icq.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
+        fech_hdisp = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HDISP']).group(1)
+
+        o1 = self.getoutputfile()
+
+        o1.write("\n\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
+        o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
+        o1.write("CAPACIDADE INSTALADA - %s/%s\n\n" % (f['#MES'], f['#ANO']))
+
+        o1.write("HORAS DISPONIVEIS:\n")
+        o1.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hdisp))
+        o1.write("\tTotais:\n")
+        o1.write("\tIPF\t\t%.2f\n" % (ipf_hdisp))
+        o1.write("\tIPCUC\t\t%.2f\n" % (ipcuc_hdisp))
+        o1.write("\tIQ\t\t%.2f\n\n" % (icq_hdisp))
+        o1.write("\tTOTAL:\t\t%.2f\n\n\n" % (icq_hdisp+ipcuc_hdisp+ipf_hdisp))
+
+        o1.write("HORAS EFETIVAS:\n")
+        o1.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hefet))
+        o1.write("\tTotais:\n")
+        o1.write("\tIPF\t\t%.2f\n" % (ipf_hefet))
+        o1.write("\tIPCUC\t\t%.2f\n" % (ipcuc_hefet))
+        o1.write("\tIQ\t\t%.2f\n\n" % (icq_hefet))
+        o1.write("\tTOTAL:\t\t%.2f\n\n\n" % (icq_hefet+ipcuc_hefet+ipf_hefet))
+
+        o1.write("HORAS TOTAIS:\n")
+        o1.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_htot))
+        o1.write("\tTotais:\n")
+        o1.write("\tIPF\t\t%.2f\n" % (ipf_htot))
+        o1.write("\tIPCUC\t\t%.2f\n" % (ipcuc_htot))
+        o1.write("\tIQ\t\t%.2f\n\n" % (icq_htot))
+        o1.write("\tTOTAL:\t\t%.2f\n\n\n" % (icq_htot+ipcuc_htot+ipf_htot))
+        
+                
+a = CapacidadeInstalada()
+a.run()
