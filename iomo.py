@@ -31,8 +31,9 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
 
         total_hdisp = icq_hdisp+ipcuc_hdisp+ipf_hdisp
 
-        o1 = self.getoutputfile()
+        o1 = self.getoutputfile(append='%s-%s' % (f['#MES'], f['#ANO']))
 
+        o1.write("\n")
         o1.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
         o1.write("INDICE DE OCUPACAO DE MAO DE OBRA (IOMO) - %s/%s\n\n" % (f['#MES'], f['#ANO']))

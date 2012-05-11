@@ -66,8 +66,8 @@ class BaseSISPOS:
             raw_input("--pressione enter--")
             exit(1)
 
-    def getoutputfile(self, ext="txt", fmode='w'):
-        fname = "%s%d.%s" % (self.__class__.__name__, self.outputfileno, ext)
+    def getoutputfile(self, append='', ext="txt", fmode='w'):
+        fname = "%s_%s_%d.%s" % (self.__class__.__name__, append, self.outputfileno, ext)
         self.outputfileno += 1
         fpath = os.path.join(self.outputpath, fname)
 

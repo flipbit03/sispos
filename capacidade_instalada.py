@@ -37,9 +37,10 @@ class CapacidadeInstalada(BaseSISPOS):
         icq_hdisp = float(re.search(r'icq.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
         fech_hdisp = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HDISP']).group(1)
 
-        o1 = self.getoutputfile()
+        o1 = self.getoutputfile(append='%s-%s' % (f['#MES'], f['#ANO']))
 
-        o1.write("\n\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
+        o1.write("\n")
+        o1.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
         o1.write("CAPACIDADE INSTALADA - %s/%s\n\n" % (f['#MES'], f['#ANO']))
 
