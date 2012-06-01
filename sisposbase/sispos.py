@@ -58,9 +58,10 @@ class BaseSISPOS:
 
     def run(self):
         if self.canrun:
-            self.process(self.inputfiles)
+            retval = self.process(self.inputfiles)
             self.closeall()
             raw_input("\n\n---- Fim do processamento, pressione ENTER ----")
+            return retval
         else:
             print "ERRO: O modulo nao pode ser executado pois faltam arquivos de entrada!"
             raw_input("--pressione enter--")
