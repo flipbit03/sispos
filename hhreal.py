@@ -3,11 +3,111 @@ import os
 import re
 from sisposbase.sispos import BaseSISPOS
 
-
-ding = None
-
 class HHReal(BaseSISPOS):
     findfiles = ( ("HHREAL","hhreal"), )
+
+    # Dict used to store OS judgement data
+    jdata = {}
+
+    # CSS used for formatting the HTML file.
+    inlinecss = \
+"""
+.ignoredhour
+{
+color: LightSteelBlue;
+}
+
+.unknownhour
+{
+color: LightSteelBlue;
+background-color: red;
+}
+
+.normalhour
+{
+}
+
+.hiliteativ
+{
+    color: orange;
+    font-weight: bold;
+}
+
+.totalcargo
+{
+    font-size: small ;
+    font-weight: bold ;
+    font-style: italic ;
+}
+
+.totalos
+{
+    font-weight: bold ;
+    font-style: italic ;
+}
+"""
+
+    def processjdata(self, line):
+        #codped || descricao || depto || fa || atividade || tothora || <ignore>
+
+        # Get main variables
+        codped, descricao, depto, fa, atividade, tothora, ign = line
+
+        # Generate additional vars from main
+        cat, catmotiv = self.judgecat(line)
+        wts = self.judgewts(line)
+                       
+        if not self.jdata.has_key(codped):
+            self.jdata[codped] = {}
+
+        if not self.jdata[codped].has_key(cat):
+            self.jdata[codped][cat] = {}
+
+        for htype in wts:
+            if not self.jdata[codped][cat].has_key(htype):
+                self.jdata[codped][cat][htype] = float(0)
+                    
+            self.jdata[codped][cat][htype] += float(tothora)
+
+            # round everything to 2 decimal places.
+            self.jdata[codped][cat][htype] = round(self.jdata[codped][cat][htype],2)
+
+    def generateoutcomechart(self, os):
+
+        def gvn(dictvar, dictkey):
+            try:
+                return dictvar[dictkey]
+            except:
+                return ''
+        
+        rv = []
+
+        rv.append('<table border="1">')
+        rv.append('<tr>')
+        rv.append('<tr><td colspan="5" align="center">%s</td></tr>' % (os))
+        rv.append('<tr><td>Categoria</td><td>Horas Totais:</td><td>Horas 18</td><td>Horas 80</td><td>Horas 92</td></tr>')
+
+        z = gvn(self.jdata, os)
+
+        if z:
+            for categ in ["Tracagem", "Corte", "Calandra", "Montagem",
+                          "Soldagem", "Trat.Termico", "Jato/Pintura",
+                          "Usin./Ferram.", "ITE", "TEC.M.PRO", "ICQ", "IGNORADO", "DESCONHECIDO"]:
+
+                t = gvn(z, categ)
+
+                ht, h18, h80, h92 = ('','','','')
+                if t:
+                    ht = gvn(t, 'total')
+                    h18 = gvn(t, 'h18')
+                    h80 = gvn(t, 'h80')
+                    h92 = gvn(t, 'h92')
+                
+                rv.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (categ, ht, h18, h80, h92))
+
+        rv.append('</table>')
+
+        return ''.join(rv)
 
     def judgewts(self, line):
         '''Explains where to put the hours, total or total+(18,80,92-97)'''
@@ -16,7 +116,6 @@ class HHReal(BaseSISPOS):
 
         # Where to sum? 18, 80 or 92-97
         wts = []
-
 
         # Qualquer hora é somada as horas totais
         wts.append('total')
@@ -39,11 +138,9 @@ class HHReal(BaseSISPOS):
     def judgecat(self, line):
         #get data
         codped, cargo, depto, fa, atividade, tothora, ign = line
-
         
         categ = 'DESCONHECIDO' #tracagem, corte, ....
         motiv = 'Linha não entrou em nenhuma regra! Verificar...' # motivo em caso de regra especial
-        
 
         # -------------
         # -- Ignorar --
@@ -52,34 +149,42 @@ class HHReal(BaseSISPOS):
         # Técnico de Planejamento
         if cargo.find("TEC.PLANE") >= 0:
             categ = 'IGNORADO'
-            motiv = 'Tecnico de Planejamento'
+            motiv = 'Cargo Ignorado: Tecnico de Planejamento'
             return (categ, motiv)
 
         # Auxiliar Administrativo
         if cargo.find("AUX.ADM") >= 0:
             categ = 'IGNORADO'
-            motiv = 'Auxiliar Administrativo'
+            motiv = 'Cargo Ignorado: Auxiliar Administrativo'
             return (categ, motiv)
 
         # Arquivista Técnico
         if cargo.find("ARQ. TEC.") >= 0:
             categ = 'IGNORADO'
-            motiv = 'Arquivista Tecnico'
+            motiv = 'Cargo Ignorado: Arquivista Tecnico'
             return (categ, motiv)
 
         # Supervisores e Mestres
         if ((cargo.find("SUP") >= 0) or
             (cargo.find("MEST") >= 0)):
             categ = 'IGNORADO'
-            motiv = 'Supervisor ou Mestre'
+            motiv = 'Cargo Ignorado: Supervisor ou Mestre'
             return (categ, motiv)
 
         # Departamentos ignorados
         if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM"):
             categ = "IGNORADO"
-            motiv = "Setor Ignorado: \"%s\"" % (depto)
+            motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
 
+        # -----------
+        # -- CARGO --
+        # -----------
+    
+        #TEC. M. PRO
+        if cargo in ("TEC.M.PRO"):
+            categ = "TEC.M.PRO"
+            return (categ,'')
 
         # -------------
         # -- Setores --
@@ -126,17 +231,12 @@ class HHReal(BaseSISPOS):
 
         #Usinagem/Ferramentaria
         if depto in ("IP-CUC/U", "IP-CUC/F"):
-            categ = "Usinagem/Ferramentaria"
+            categ = "Usin./Ferram."
             return (categ,'')
 
         #ITE
         if depto in ("ITI", "IT-CEP", "IT-CPL", "I-EES", "IG-CPR-1"):
             categ = "ITE"
-            return (categ,'')
-
-        #TEC. M. PRO
-        if cargo in ("TEC.M.PRO"):
-            categ = "TEC.M.PRO"
             return (categ,'')
 
         #ICQ
@@ -145,7 +245,7 @@ class HHReal(BaseSISPOS):
             return (categ,'')
 
 
-        # Else? IGNORED
+        # Else? DESCONHECIDO (Programmer should check it out)
         return (categ, motiv)
 
     def process (self, f):
@@ -157,43 +257,117 @@ class HHReal(BaseSISPOS):
         # fields: codped || descricao || depto || fa || atividade || tothora || <ignore>
         fs = [x.split('|') for x in f['HHREAL'].split('\n')]
 
+        # Get output file
+        o1 = self.getoutputfile(ext='html')  #, append='%s-%s' % (f['#MES'], f['#ANO']))
 
-        data = {}
+        # init output html
+        o1.write('<!DOCTYPE html>')
+        o1.write('<html>')
+        o1.write('<head><title>HHREAL - SISPOS</title><style>%s</style>' % (self.inlinecss))
         
-        for line in fs:
-            #codped || descricao || depto || fa || atividade || tothora || <ignore>
-            print "--> %s" % (str(line))
+        o1.write('<body>')
+        o1.write('<h1>HHREAL</h1>')
 
-            # Get main variables
-            codped, descricao, depto, fa, atividade, tothora, ign = line
+        # Get OS list
+        oses = list(set([x[0] for x in fs]))
+        oses.sort()
+        for os in oses:
+            # Open HTML TABLE
+            o1.write('<table>')
+            o1.write('<tr>')
+            o1.write("""<th width="100">codped</th>
+                    <th width="170">cargo</th>
+                    <th width="80">depto</th>
+                    <th width="100">fa-ativ</th>
+                    <th width="50">horas</th>
+                    <th width="150">outcome</th>""")
+            o1.write('</tr>')
 
-            # Generate additional vars from main
-            cat, catmotiv = self.judgecat(line)
-            wts = self.judgewts(line)
-            
-            
-            if not data.has_key(codped):
-                data[codped] = {}
+            #In this OS, get distinct PROFESSIONS
+            professions = list(set([x[1] for x in fs if x[0] == os]))
+            professions.sort()
+            for profession in professions:
+                # List and process hours for this profession
+                lines = [x for x in fs if x[0] == os and x[1] == profession]
 
-            if not data[codped].has_key(cat):
-                
-                data[codped][cat] = {}
+                for line in lines:
+                    ## MAIN LOOP HERE!
 
-            for htype in wts:
-                if not data[codped][cat].has_key(htype):
-                    data[codped][cat][htype] = float(0)
+                    ## Process OS statistics
+                    self.processjdata(line)
+
+                    ## Split line
+                    codped, descricao, depto, fa, atividade, tothora, ign = line
+
+                    ## Generate additional vars
+                    cat, catmotiv = self.judgecat(line)
+                    wts = self.judgewts(line)
+
                     
-                data[codped][cat][htype] += float(tothora)                        
+                    # Alter formatting from outcome (cat/catmotiv/wts)
+                    trclass = ''
+                    trtitle = ''
+                    tdtothora = ''
+                    if cat == "IGNORADO": # Ignored hours
+                        trclass = 'class="ignoredhour"'
+                        trtitle = 'title="%s"' % (catmotiv)
+                    elif cat == "DESCONHECIDO": # Unknown hours (Programmer should check these so highlight!)
+                        trclass = 'class="unknownhour"'
+                    else:
+                        trclass = 'class="normalhour"' # Normal hours
+                        if ('h18' in wts) or ('h80' in wts) or ('h92' in wts):
+                            tdtothora='class="hiliteativ"'
+
+                    # Write it out
+                    o1.write('<tr %s %s>' % (trclass, trtitle))
+                    o1.write('<td>%s</td>' % (codped))
+                    o1.write('<td>%s</td>' % (descricao))
+                    o1.write('<td>%s</td>' % (depto))
+                    o1.write('<td %s align="center">%s %s</td>' % (tdtothora, fa,atividade))
+                    o1.write('<td align="center">%s</td>' % (tothora))
+                    o1.write('<td align="right">%s</td>' % (cat))
+                    o1.write('</tr>')
+                
+                # Total hours for this profession:
+                sumhp = sum([float(x[5]) for x in fs if x[0] == os and x[1] == profession])
+                print "\t total de HH de %s --> %.2f" % (profession, sumhp)
+                o1.write('<tr class="totalcargo">')
+                o1.write('<td colspan="4" align="center">Total de HH de %s</td>' % (profession))
+                o1.write('<td colspan="2">%.2f</td>' % (sumhp))
+                o1.write('</tr>')
+                o1.write('<tr>')
+                o1.write('<td>&nbsp;</td>')
+                o1.write('</tr>')
 
 
+            # Total hours for this OS
+            sumhos = sum([float(x[5]) for x in fs if x[0] == os])
+            print "total de HH da OS %s --> %.2f" % (os, sumhos)
+            o1.write('<tr>')
+            o1.write('<td colspan="4" align="center" class="totalos">Total de HH da OS %s</td>' % (os))
+            o1.write('<td colspan="2" class="totalos">%.2f</td>' % (sumhos))
+            o1.write('<td>&nbsp;</td>')
+            o1.write('</tr>')
+            o1.write('<tr>')
+            o1.write('<td>&nbsp;</td>')
+            o1.write('</tr>')
 
-        return data
 
-        #o1 = self.getoutputfile(append='%s-%s' % (f['#MES'], f['#ANO']))
+            # Close HTML Table
+            o1.write('</table>')
 
-        
+            # Generate outcome chart (Result)
+            o1.write(self.generateoutcomechart(os))
+
+            o1.write('<hr />')
+
+        # Close HTML document
+        o1.write('</body></html>')
+
+        return self.jdata
         
                 
 a = HHReal()
 
 r = a.run()
+#r2 = r[1]
