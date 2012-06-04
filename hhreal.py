@@ -29,7 +29,7 @@ background-color: red;
 
 .hiliteativ
 {
-    color: orange;
+    color: OrangeRed;
     font-weight: bold;
 }
 
@@ -330,7 +330,7 @@ background-color: red;
                 
                 # Total hours for this profession:
                 sumhp = sum([float(x[5]) for x in fs if x[0] == os and x[1] == profession])
-                print "\t total de HH de %s --> %.2f" % (profession, sumhp)
+                #print "\t total de HH de %s --> %.2f" % (profession, sumhp) #debug
                 o1.write('<tr class="totalcargo">')
                 o1.write('<td colspan="4" align="center">Total de HH de %s</td>' % (profession))
                 o1.write('<td colspan="2">%.2f</td>' % (sumhp))
@@ -342,7 +342,7 @@ background-color: red;
 
             # Total hours for this OS
             sumhos = sum([float(x[5]) for x in fs if x[0] == os])
-            print "total de HH da OS %s --> %.2f" % (os, sumhos)
+            #print "total de HH da OS %s --> %.2f" % (os, sumhos) #debug
             o1.write('<tr>')
             o1.write('<td colspan="4" align="center" class="totalos">Total de HH da OS %s</td>' % (os))
             o1.write('<td colspan="2" class="totalos">%.2f</td>' % (sumhos))
