@@ -4,10 +4,16 @@ import re
 from sisposbase.sispos import BaseSISPOS
 
 class HHReal(BaseSISPOS):
+    # ----------------------------------
+    # Initalization parameters
+    # ----------------------------------
+
     findfiles = ( ("HHREAL","hhreal"), )
 
-    # Dict used to store OS judgement data
-    jdata = {}
+    # ----------------------------------
+    # Data
+    # ----------------------------------
+
 
     # CSS used for formatting the HTML file.
     inlinecss = \
@@ -29,7 +35,7 @@ background-color: red;
 
 .hiliteativ
 {
-    color: OrangeRed;
+    color: Red;
     font-weight: bold;
 }
 
@@ -46,6 +52,39 @@ background-color: red;
     font-style: italic ;
 }
 """
+
+    # Work categories:
+    catTRAC = "Traçagem"
+    catCORT = "Corte"
+    catCALA = "Calandra"
+    catMONT = "Montagem"
+    catSOLD = "Soldagem"
+    catTRAT = "Trat. Térmico"
+    catJATO = "Jato/Pintura"
+    catUSIF = "Usin./Ferram."
+    catITE  = "ITE"
+    catTECM = "TEC.M.PRO"
+    catICQ  = "ICQ"
+    catIGN  = "IGNORADO"       # Ignored hours
+    catUNK  = "DESCONHECIDO"   # Unknown hours because of missing rules, programmer should check these.
+
+    # Work categories, ordered:
+    catsORD = [catTRAC, catCORT, catCALA, catMONT, catSOLD, catTRAT, catJATO, catUSIF,
+               catITE, catTECM, catICQ, catIGN, catUNK]
+
+    # Hour types:
+    hourTOTAL = 'total'
+    hour18    = 'h18'
+    hour80    = 'h80'
+    hour92    = 'h92'
+
+    # ----------------------------------
+    # Code
+    # ----------------------------------
+
+    # Dict used to store OS judgement data
+    jdata = {}
+
 
     def processjdata(self, line):
         #codped || descricao || depto || fa || atividade || tothora || <ignore>
@@ -90,18 +129,16 @@ background-color: red;
         z = gvn(self.jdata, os)
 
         if z:
-            for categ in ["Tracagem", "Corte", "Calandra", "Montagem",
-                          "Soldagem", "Trat.Termico", "Jato/Pintura",
-                          "Usin./Ferram.", "ITE", "TEC.M.PRO", "ICQ", "IGNORADO", "DESCONHECIDO"]:
+            for categ in self.catsORD:
 
                 t = gvn(z, categ)
 
                 ht, h18, h80, h92 = ('','','','')
                 if t:
-                    ht = gvn(t, 'total')
-                    h18 = gvn(t, 'h18')
-                    h80 = gvn(t, 'h80')
-                    h92 = gvn(t, 'h92')
+                    ht = gvn(t, self.hourTOTAL)
+                    h18 = gvn(t, self.hour18)
+                    h80 = gvn(t, self.hour80)
+                    h92 = gvn(t, self.hour92)
                 
                 rv.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (categ, ht, h18, h80, h92))
 
@@ -172,7 +209,7 @@ background-color: red;
             return (categ, motiv)
 
         # Departamentos ignorados
-        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM"):
+        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM", "IG-AS", "IG-CLF"):
             categ = "IGNORADO"
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
