@@ -148,7 +148,7 @@ background-color: red;
 
         data.insert(1, ('---Categoria---', '||Horas totais||', '||Horas 80||', '||Horas 18||', '||Horas 92-97||') )
 
-        data.insert(10, ('Carpintaria', '*', '*', '*', '*'))
+        data.insert(10, ('Carpintaria', '¬', '¬', '¬', '¬'))
 
         for line in data:
             rv.append('\t'.join(line))
