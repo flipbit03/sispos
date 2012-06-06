@@ -14,7 +14,6 @@ class HHReal(BaseSISPOS):
     # Data
     # ----------------------------------
 
-
     # CSS used for formatting the HTML file.
     inlinecss = \
 """
@@ -111,7 +110,7 @@ background-color: red;
             # round everything to 2 decimal places.
             self.jdata[codped][cat][htype] = round(self.jdata[codped][cat][htype],2)
 
-    def generateoutcomechart(self, os):
+    def generateoutcomelist(self, os):
 
         def gvn(dictvar, dictkey):
             try:
@@ -121,10 +120,7 @@ background-color: red;
         
         rv = []
 
-        rv.append('<table border="1">')
-        rv.append('<tr>')
-        rv.append('<tr><td colspan="5" align="center">%s</td></tr>' % (os))
-        rv.append('<tr><td>Categoria</td><td>Horas Totais:</td><td>Horas 18</td><td>Horas 80</td><td>Horas 92</td></tr>')
+        rv.append( (os,) )
 
         z = gvn(self.jdata, os)
 
@@ -140,7 +136,58 @@ background-color: red;
                     h80 = gvn(t, self.hour80)
                     h92 = gvn(t, self.hour92)
                 
-                rv.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (categ, ht, h18, h80, h92))
+                rv.append( (categ, str(ht).replace('.',','), str(h80).replace('.',','), str(h18).replace('.',','), str(h92).replace('.',',')) )
+
+        return rv
+
+    def generateoutcomecsv(self, os):
+
+        rv = []
+
+        data = self.generateoutcomelist(os)
+
+        data.insert(1, ('---Categoria---', '||Horas totais||', '||Horas 80||', '||Horas 18||', '||Horas 92-97||') )
+
+        data.insert(10, ('Carpintaria', '*', '*', '*', '*'))
+
+        for line in data:
+            rv.append('\t'.join(line))
+
+        rv.append('\n\n')
+
+
+        return '\n'.join(rv)
+
+    def generateoutcomechart(self, os):
+
+        def gvn(dictvar, dictkey):
+            try:
+                return dictvar[dictkey]
+            except:
+                return ''
+        
+        rv = []
+
+        rv.append('<table border="1">')
+        rv.append('<tr>')
+        rv.append('<tr><td colspan="5" align="center">%s</td></tr>' % (os))
+        rv.append('<tr><td>Categoria</td><td>Horas Totais:</td><td>Horas 80</td><td>Horas 18</td><td>Horas 92</td></tr>')
+
+        z = gvn(self.jdata, os)
+
+        if z:
+            for categ in self.catsORD:
+
+                t = gvn(z, categ)
+
+                ht, h18, h80, h92 = ('','','','')
+                if t:
+                    ht = gvn(t, self.hourTOTAL)
+                    h18 = gvn(t, self.hour18)
+                    h80 = gvn(t, self.hour80)
+                    h92 = gvn(t, self.hour92)
+                
+                rv.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (categ, ht, h80, h18, h92))
 
         rv.append('</table>')
 
@@ -176,7 +223,7 @@ background-color: red;
         #get data
         codped, cargo, depto, fa, atividade, tothora, ign = line
         
-        categ = 'DESCONHECIDO' #tracagem, corte, ....
+        categ = self.catUNK #tracagem, corte, ....
         motiv = 'Linha não entrou em nenhuma regra! Verificar...' # motivo em caso de regra especial
 
         # -------------
@@ -185,32 +232,32 @@ background-color: red;
 
         # Técnico de Planejamento
         if cargo.find("TEC.PLANE") >= 0:
-            categ = 'IGNORADO'
+            categ = self.catIGN
             motiv = 'Cargo Ignorado: Tecnico de Planejamento'
             return (categ, motiv)
 
         # Auxiliar Administrativo
         if cargo.find("AUX.ADM") >= 0:
-            categ = 'IGNORADO'
+            categ = self.catIGN
             motiv = 'Cargo Ignorado: Auxiliar Administrativo'
             return (categ, motiv)
 
         # Arquivista Técnico
         if cargo.find("ARQ. TEC.") >= 0:
-            categ = 'IGNORADO'
+            categ = self.catIGN
             motiv = 'Cargo Ignorado: Arquivista Tecnico'
             return (categ, motiv)
 
         # Supervisores e Mestres
         if ((cargo.find("SUP") >= 0) or
             (cargo.find("MEST") >= 0)):
-            categ = 'IGNORADO'
+            categ = self.catIGN
             motiv = 'Cargo Ignorado: Supervisor ou Mestre'
             return (categ, motiv)
 
         # Departamentos ignorados
         if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM", "IG-AS", "IG-CLF"):
-            categ = "IGNORADO"
+            categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
 
@@ -220,7 +267,7 @@ background-color: red;
     
         #TEC. M. PRO
         if cargo in ("TEC.M.PRO"):
-            categ = "TEC.M.PRO"
+            categ = self.catTECM
             return (categ,'')
 
         # -------------
@@ -229,56 +276,56 @@ background-color: red;
 
         #Tracagem
         if depto in ("IPF/T", "IPF-T"):
-            categ = "Tracagem"
+            categ = self.catTRAC
             return (categ,'')
 
         #Corte
         if depto in ("IPF/C", "IPF-C"):
-            categ = "Corte"
+            categ = self.catCORT
             return (categ,'')
 
         #Calandra
         if depto in ("IP-CUC/C", "IP-CUC/D", "IP-CPP-D"):
-            categ = "Calandra"
+            categ = self.catCALA
             return (categ,'')
 
         #Montagem
         if depto in ("IPF/M"):
-            categ = "Montagem"
+            categ = self.catMONT
             return (categ,'')
         elif depto in ("IPF") and (cargo.find('IND.') >= 0):
-            categ = "Montagem"
+            categ = self.catMONT
             motiv = "Regra especial: Tecnico Industrial no IPF"
             return (categ,motiv)
 
         #Soldagem
         if depto in ("IPF/S"):
-            categ = "Soldagem"
+            categ = self.catSOLD
             return (categ,'')
 
         #Tratamento Termico
         if depto in ("IPF/TT"):
-            categ = "Trat.Termico"
+            categ = self.catTRAT
             return (categ,'')
 
         #Jato/Pintura
         if depto in ("IPF/JP"):
-            categ = "Jato/Pintura"
+            categ = self.catJATO
             return (categ,'')
 
         #Usinagem/Ferramentaria
         if depto in ("IP-CUC/U", "IP-CUC/F"):
-            categ = "Usin./Ferram."
+            categ = self.catUSIF
             return (categ,'')
 
         #ITE
         if depto in ("ITI", "IT-CEP", "IT-CPL", "I-EES", "IG-CPR-1"):
-            categ = "ITE"
+            categ = self.catITE
             return (categ,'')
 
         #ICQ
         if depto in ("IQ"):
-            categ = "ICQ"
+            categ = self.catICQ
             return (categ,'')
 
 
@@ -294,8 +341,10 @@ background-color: red;
         # fields: codped || descricao || depto || fa || atividade || tothora || <ignore>
         fs = [x.split('|') for x in f['HHREAL'].split('\n')]
 
-        # Get output file
+        # Get output file for HTML
         o1 = self.getoutputfile(ext='html')  #, append='%s-%s' % (f['#MES'], f['#ANO']))
+
+        o2 = self.getoutputfile(ext='csv', append='excel')
 
         # init output html
         o1.write('<!DOCTYPE html>')
@@ -388,6 +437,9 @@ background-color: red;
             o1.write('<tr>')
             o1.write('<td>&nbsp;</td>')
             o1.write('</tr>')
+
+            # Write CSV outcome for this OS
+            o2.write(self.generateoutcomecsv(os))
 
 
             # Close HTML Table
