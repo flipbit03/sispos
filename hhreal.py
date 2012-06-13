@@ -334,8 +334,8 @@ background-color: red;
 
     def process (self, f):
         # strip carriage returns
-        f['HHREAL'] = f['HHREAL'].strip()
-        f['HHREAL'] = f['HHREAL'].replace('\r','')
+        f[self.__class__.__name__.upper()] = f[self.__class__.__name__.upper()].strip()
+        f[self.__class__.__name__.upper()] = f[self.__class__.__name__.upper()].replace('\r','')
 
         # split lines and split each line to a tuple
         # fields: codped || descricao || depto || fa || atividade || tothora || <ignore>
@@ -349,10 +349,10 @@ background-color: red;
         # init output html
         o1.write('<!DOCTYPE html>')
         o1.write('<html>')
-        o1.write('<head><title>HHREAL - SISPOS</title><style>%s</style>' % (self.inlinecss))
+        o1.write('<head><title>%s - SISPOS</title><style>%s</style>' % (self.__class__.__name__.upper(), self.inlinecss))
         
         o1.write('<body>')
-        o1.write('<h1>HHREAL</h1>')
+        o1.write('<h1>%s</h1>' % (self.__class__.__name__.upper()))
 
         # Get OS list
         oses = list(set([x[0] for x in fs]))
@@ -455,8 +455,7 @@ background-color: red;
 
         return self.jdata
         
-                
-a = HHReal()
 
-r = a.run()
-#r2 = r[1]
+if __name__ == "__main__":
+    a = HHReal()
+    r = a.run()
