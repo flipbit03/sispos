@@ -12,11 +12,10 @@ class HHRealInt(HHReal):
     # Initalization parameters
     # ----------------------------------
 
-    # Internal file name has to be Class name in UPPERCASE --> HHREALINT
-    # because of HHReal's process() method file access method --> f[sel.f__class__.__name__.upper()]
-    # This way we can reuse HHReal's methods without having to recode everything because of the file name
-    findfiles = ( ("HHREALINT","hhrealint"), )
-                                                    
+    # No init needed because of HHReal's .dynfindfiles() method (Uses class name to find files)
+
+    # needed as there are no instructions in this class
+    pass 
 
 if __name__ == "__main__":
     a = HHRealInt()

@@ -8,7 +8,12 @@ class HHReal(BaseSISPOS):
     # Initalization parameters
     # ----------------------------------
 
-    findfiles = ( ("HHREAL","hhreal"), )
+    findfiles = [ ('#MES', "Digite o mes atual MM"),
+                  ('#ANO', "Digite o ano atual AAAA") ]
+
+    def dynfindfiles(self):
+        mainfile = ( self.__class__.__name__.upper(), self.__class__.__name__.lower() )
+        self.findfiles.append(mainfile)
 
     # ----------------------------------
     # Data
@@ -338,9 +343,9 @@ background-color: red;
         fs = [x.split('|') for x in f[self.__class__.__name__.upper()].split('\n')]
 
         # Get output file for HTML
-        o1 = self.getoutputfile(ext='html')  #, append='%s-%s' % (f['#MES'], f['#ANO']))
-
-        o2 = self.getoutputfile(ext='csv', append='excel')
+        o1 = self.getoutputfile(ext='html', append='%s-%s' % (f['#MES'], f['#ANO']))
+        # Get output file for CSV
+        o2 = self.getoutputfile(ext='csv', append='%s-%s-excel' % (f['#MES'], f['#ANO']))
 
         # init output html
         o1.write('<!DOCTYPE html>')

@@ -7,7 +7,7 @@ OUTPUTPATH = os.path.join(os.getcwd(), "outputs")
 
 class BaseSISPOS:
     #FILL THIS IN
-    findfiles = ()
+    findfiles = []
     
     inputpath = INPUTPATH
     outputpath = OUTPUTPATH
@@ -16,12 +16,20 @@ class BaseSISPOS:
     txtlog = []
     canrun = False
     outputfileno = 0
+
+    # Override me to dynamically add files to findfiles 
+    def dynfindfiles(self):
+        pass #self.findfiles.append ( (xx,xx) )...
     
     def __init__(self):
         print "-----------------------------"
         print "SISPOS - Modulo %s" % (self.__class__.__name__)
         print "-----------------------------"
         print ""
+
+        # Call this function to populate dynamically self.findfiles
+        self.dynfindfiles()
+        
         if self.findfiles:
             #Arquivos
             files = [b for b in self.findfiles if not b[0][0] == '#']
