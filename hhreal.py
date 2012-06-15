@@ -92,8 +92,8 @@ background-color: red;
         codped, descricao, depto, fa, atividade, tothora, ign = line
 
         # Generate additional vars from main
-        cat, catmotiv = self.judgecat(line)
-        wts = self.judgewts(line)
+        cat, catmotiv = self.judgecat(descricao, depto)
+        wts = self.judgewts(fa, atividade)
                        
         if not self.jdata.has_key(codped):
             self.jdata[codped] = {}
@@ -193,11 +193,9 @@ background-color: red;
 
         return ''.join(rv)
 
-    def judgewts(self, line):
+    def judgewts(self, fa='', atividade=''):
         '''Explains where to put the hours, total or total+(18,80,92-97)'''
-        #get data
-        codped, cargo, depto, fa, atividade, tothora, ign = line
-
+        
         # Where to sum? 18, 80 or 92-97
         wts = []
 
@@ -205,11 +203,11 @@ background-color: red;
         wts.append('total')
 
         # Código 18 -- Preparação
-        if atividade in ("18"):
+        if atividade in ("18",):
             wts.append('h18')
 
         # Código 80 -- Reparo
-        elif atividade in ("80"):
+        elif atividade in ("80",):
             wts.append('h80')
 
         # Códigos 92-97
@@ -219,9 +217,7 @@ background-color: red;
 
         return list(wts)
 
-    def judgecat(self, line):
-        #get data
-        codped, cargo, depto, fa, atividade, tothora, ign = line
+    def judgecat(self, cargo, depto):
         
         categ = self.catUNK #tracagem, corte, ....
         motiv = 'Linha não entrou em nenhuma regra! Verificar...' # motivo em caso de regra especial
@@ -339,7 +335,7 @@ background-color: red;
 
         # split lines and split each line to a tuple
         # fields: codped || descricao || depto || fa || atividade || tothora || <ignore>
-        fs = [x.split('|') for x in f['HHREAL'].split('\n')]
+        fs = [x.split('|') for x in f[self.__class__.__name__.upper()].split('\n')]
 
         # Get output file for HTML
         o1 = self.getoutputfile(ext='html')  #, append='%s-%s' % (f['#MES'], f['#ANO']))
@@ -386,8 +382,8 @@ background-color: red;
                     codped, descricao, depto, fa, atividade, tothora, ign = line
 
                     ## Generate additional vars
-                    cat, catmotiv = self.judgecat(line)
-                    wts = self.judgewts(line)
+                    cat, catmotiv = self.judgecat(descricao, depto)
+                    wts = self.judgewts(fa, atividade)
 
                     
                     # Alter formatting from outcome (cat/catmotiv/wts)
