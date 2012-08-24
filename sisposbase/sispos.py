@@ -102,10 +102,3 @@ class BaseSISPOS:
         print "-------------------\n"
 
 
-
-            
-            
-            
-        
-        
-                 
