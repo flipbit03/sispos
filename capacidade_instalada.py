@@ -41,8 +41,9 @@ class CapacidadeInstalada(BaseSISPOS):
         
         total_hdisp = icq_hdisp+ipcuc_hdisp+ipf_hdisp
 
+        # Arquivo de Saída #1 -- CAPAC Normal
         o1 = self.getoutputfile(append='%s-%s' % (f['#MES'], f['#ANO']))
-
+        
         o1.write("\n")
         o1.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
@@ -72,10 +73,48 @@ class CapacidadeInstalada(BaseSISPOS):
         o1.write("\tIQ\t\t%.2f\n\n" % (icq_htot))
         o1.write("\tTOTAL:\t\t%.2f\n\n\n" % (icq_htot+ipcuc_htot+ipf_htot))
         
+        indice_total = ( (icq_hefet+ipcuc_hefet+ipf_hefet) / (icq_htot+ipcuc_htot+ipf_htot) )*100
+        
         o1.write('\n\n')
         o1.write('                HORAS EFETIVAS\n')
-        o1.write(' INDICE = -------------------------- = %.0f%%\n' % ((total_hefet/total_htot)*100))
+        o1.write(' INDICE = -------------------------- = %.0f%%\n' % (indice_total))
         o1.write('                HORAS TOTAIS\n')
+        
+        # Arquivo de Saída #2 -- CAPAC Dario (Sem IQ)
+        o2 = self.getoutputfile(append='%s-%s_DARIO' % (f['#MES'], f['#ANO']))
+        
+        o2.write("\n")
+        o2.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
+        o2.write("\tGERENCIA DE CONTROLE - ICC\n\n")
+        o2.write("CAPACIDADE INSTALADA (Dario) - %s/%s\n\n" % (f['#MES'], f['#ANO']))
+
+        o2.write("HORAS DISPONIVEIS:\n")
+        o2.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hdisp))
+        o2.write("\tTotais:\n")
+        o2.write("\tIPF\t\t%.2f\n" % (ipf_hdisp))
+        o2.write("\tIPCUC\t\t%.2f\n" % (ipcuc_hdisp))
+        o2.write("\tTOTAL:\t\t%.2f\n\n\n" % (ipcuc_hdisp+ipf_hdisp))
+
+        o2.write("HORAS EFETIVAS:\n")
+        o2.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hefet))
+        o2.write("\tTotais:\n")
+        o2.write("\tIPF\t\t%.2f\n" % (ipf_hefet))
+        o2.write("\tIPCUC\t\t%.2f\n" % (ipcuc_hefet))
+        o2.write("\tTOTAL:\t\t%.2f\n\n\n" % (ipcuc_hefet+ipf_hefet))
+
+        o2.write("HORAS TOTAIS:\n")
+        o2.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_htot))
+        o2.write("\tTotais:\n")
+        o2.write("\tIPF\t\t%.2f\n" % (ipf_htot))
+        o2.write("\tIPCUC\t\t%.2f\n" % (ipcuc_htot))
+        o2.write("\tTOTAL:\t\t%.2f\n\n\n" % (ipcuc_htot+ipf_htot))
+        
+        indice_dario = ( (ipcuc_hefet+ipf_hefet) / (ipcuc_htot+ipf_htot) )*100
+        
+        o2.write('\n\n')
+        o2.write('                HORAS EFETIVAS\n')
+        o2.write(' INDICE = -------------------------- = %.0f%%\n' % (indice_dario))
+        o2.write('                HORAS TOTAIS\n')
         
                 
 a = CapacidadeInstalada()
