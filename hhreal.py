@@ -86,8 +86,11 @@ background-color: red;
     # Code
     # ----------------------------------
 
-    # Dict used to store OS judgement data
+    # Dict used to store OS judgement data - jdata #1
     jdata = {}
+    
+    # Dict used to store totals for each activity type - jdata #2
+    jdata2 = {}
 
 
     def processjdata(self, line):
@@ -96,6 +99,10 @@ background-color: red;
         # Get main variables
         codped, descricao, depto, fa, atividade, tothora, ign = line
 
+        # ##############################################
+        # Jdata #1 --> Generate main report data
+        # ##############################################
+        
         # Generate additional vars from main
         cat, catmotiv = self.judgecat(descricao, depto)
         wts = self.judgewts(fa, atividade)
@@ -114,6 +121,46 @@ background-color: red;
 
             # round everything to 2 decimal places.
             self.jdata[codped][cat][htype] = round(self.jdata[codped][cat][htype],2)
+
+        # ##############################################
+        # Jdata #2 --> Generate jdata2 data, total by activity
+        # ##############################################
+        
+        if not self.jdata2.has_key(codped):
+            self.jdata2[codped] = {}
+            
+        if not self.jdata2[codped].has_key(atividade):
+            self.jdata2[codped][atividade] = float(0)
+            
+        self.jdata2[codped][atividade] += float(tothora)
+        
+        #round jdata2 data as well
+        self.jdata2[codped][atividade] = round(self.jdata2[codped][atividade],2)
+        
+        
+    def generatejdata2txt(self, f):
+        if self.jdata2:
+            rv = []
+            oslist = self.jdata2.keys()
+            oslist.sort()
+            
+            rv.append('## Totais por atividade - %s/%s ##' % (f['#MES'],f['#ANO']))
+            rv.append('')
+            
+            for os in oslist:
+                rv.append('Atividades para OS: "%s"' % (str(os),))
+                rv.append('')
+                
+                ativlist = self.jdata2[os].keys()
+                ativlist.sort()
+                for ativ in ativlist:
+                    rv.append('Codigo "%s":\t%s\thora(s)' % (ativ, str(self.jdata2[os][ativ]).replace('.',',')))
+                    
+                rv.append('')
+                rv.append('')
+                
+                
+            return '\r\n'.join(rv)
 
     def generateoutcomelist(self, os):
 
@@ -334,6 +381,10 @@ background-color: red;
         return (categ, motiv)
 
     def process (self, f):
+        # ########
+        # Jdata1
+        # ########
+        
         # strip carriage returns
         f[self.__class__.__name__.upper()] = f[self.__class__.__name__.upper()].strip()
         f[self.__class__.__name__.upper()] = f[self.__class__.__name__.upper()].replace('\r','')
@@ -453,6 +504,14 @@ background-color: red;
 
         # Close HTML document
         o1.write('</body></html>')
+        
+        
+        # ########
+        # Jdata2
+        # ########
+        
+        o3 = self.getoutputfile(ext='txt', append='%s-%s-totativ' % (f['#MES'], f['#ANO']))
+        o3.write(self.generatejdata2txt(f))
 
         return self.jdata
         
