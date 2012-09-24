@@ -82,8 +82,11 @@ color: blue;
     
     )
 
-
+    # --------------------------------------------------------------
     # "Cargo" categories:
+    # --------------------------------------------------------------
+    
+    # Factory - Lower Class
     catCALD = "Caldeireiro"
     catSOLD = "Soldador"
     catESME = "Esmerilhador"
@@ -95,16 +98,45 @@ color: blue;
     catMQSP = "Op. Maquina Especializado"
     catTORN = "Torneiro Mecanico"
     catCALA = "Op. Calandra"
+    catDESE = "Desempenador"
+    
+    # Technical - Medium Class
+    catARQT = "Arquivista Tecnico"
+    catASSE = "Assistente Especializado"
+    catDESN = "Desenhista"
+    catDESP = "Desenhista Projetista"
+    catENGO = "Engenheiro"
+    catINSQ = "Inspetor de Cont. Qualidade"
+    catPROJ = "Projetista"
+    catTMET = "Tecnico de Met. e Processos"
+    catTPLA = "Tecnico de Planejamento"
+    catTCQU = "Tecnico de Cont. da Qualidade"
+    catTELC = "Tecnico em Eletricidade"
+    catTELE = "Tecnico em Eletronica"
+    catTINF = "Tecnico de Informatica"
+    catTMEC = "Tecnico em Mecanica"
+    catMMAN = "Tecnico em Mec. de Manutencao"
+    catTMEQ = "Tecnico em Mec. do Cont. Qualidade"
+    catTIND = "Tecnico Industrial"
+    catTELM = "Tecnico em Eletromecanica"
+    
+    # Unknown
     catUNK  = "DESCONHECIDO"   # Unknown hours because of missing rules, programmer should check these.
 
     # Work categories, ordered:
-    catsORD = ( catCALD, catSOLD, catESME, catMACA, catTRAC, catAJUS, catFRES, 
-                catFORN, catMQSP, catTORN, catCALA, catUNK )
+    catsORD1 = ( catCALD, catSOLD, catESME, catMACA, catTRAC, catAJUS, catFRES, 
+                 catFORN, catMQSP, catTORN, catCALA, catDESE )
+                 
+    catsORD2 = ( catARQT,catASSE,catDESN,catDESP,catENGO,catINSQ,catPROJ,catTMET,
+                catTPLA,catTCQU,catTELC,catTELE,catTINF,catTMEC,catMMAN,catTMEQ,catTIND,catTELM )
+                
+    catsORD = catsORD1 + catsORD2 + (catUNK,)
                 
                 
     # STRING x "Cargo" mapping
     
     strcargomap = {
+        # Factory - Lower Class
         ('CALDEIREIRO', 'CALDEIREIRO ESP') : catCALD,
         ('SOLDADOR',) : catSOLD,
         ('OP.ESMER.',) : catESME,
@@ -115,7 +147,24 @@ color: blue;
         ('OP.T.TERM',) : catFORN,
         ('OP.MAQ.ESPECIALI',) : catMQSP,
         ('TORN.MEC.',) : catTORN,
-        ('OP.CALAND','OP.CALAND.') : catCALA
+        ('OP.CALAND','OP.CALAND.') : catCALA,
+        ('DESEMPENADOR') : catDESE,
+        
+        # Technical - Medium Class
+        ('ARQ. TEC.') : catARQT,
+        ('ASS.ESP.') : catASSE,
+        ('DESENHIST') : catDESN,
+        ('DES.PROJ.') : catDESP,
+        ('ENGENHEIRO') : catENGO,
+        ('INSP.C.QU') : catINSQ,
+        ('PROJETIST') : catPROJ,
+        ('TEC.M.PRO') : catTMET,
+        ('TEC.PLANE') : catTPLA,
+        ('TEC.CONT.') : catTCQU,
+        ('TEC.ELETR') : catTELC
+        
+        
+        
         }
 
     # ----------------------------------
