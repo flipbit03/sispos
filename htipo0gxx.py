@@ -3,7 +3,7 @@ import os
 import re
 from sisposbase.sispos import BaseSISPOS
 
-class HTipo0G(BaseSISPOS):
+class HTipo0GXX(BaseSISPOS):
     # ----------------------------------
     # Initalization parameters
     # ----------------------------------
@@ -362,5 +362,5 @@ color: blue;
         return self.jdata
 
 if __name__ == "__main__":
-    a = HTipo0G()
+    a = HTipo0GXX()
     r = a.run()
