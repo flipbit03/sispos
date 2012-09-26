@@ -87,41 +87,41 @@ color: blue;
     # --------------------------------------------------------------
     
     # Factory - Lower Class
-    catCALD = "Caldeireiro"
-    catSOLD = "Soldador"
-    catESME = "Esmerilhador"
-    catMACA = "Macariqueiro"
-    catTRAC = "Tracador"
-    catAJUS = "Ajustador Mecanico"
-    catFRES = "Fresador"
-    catFORN = "Tratamento Termico"
-    catMQSP = "Op. Maquina Especializado"
-    catTORN = "Torneiro Mecanico"
-    catCALA = "Op. Calandra"
-    catDESE = "Desempenador"
+    catCALD = "f_Caldeireiro"
+    catSOLD = "f_Soldador"
+    catESME = "f_Esmerilhador"
+    catMACA = "f_Macariqueiro"
+    catTRAC = "f_Tracador"
+    catAJUS = "f_Ajustador Mecanico"
+    catFRES = "f_Fresador"
+    catFORN = "f_Tratamento Termico"
+    catMQSP = "f_Op. Maquina Especializado"
+    catTORN = "f_Torneiro Mecanico"
+    catCALA = "f_Op. Calandra"
+    catDESE = "f_Desempenador"
     
     # Technical - Medium Class
-    catARQT = "Arquivista Tecnico"
-    catASSE = "Assistente Especializado"
-    catDESN = "Desenhista"
-    catDESP = "Desenhista Projetista"
-    catENGO = "Engenheiro"
-    catINSQ = "Inspetor de Cont. Qualidade"
-    catPROJ = "Projetista"
-    catTMET = "Tecnico de Met. e Processos"
-    catTPLA = "Tecnico de Planejamento"
-    catTCQU = "Tecnico de Cont. da Qualidade"
-    catTELC = "Tecnico em Eletricidade"
-    catTELE = "Tecnico em Eletronica"
-    catTINF = "Tecnico de Informatica"
-    catTMEC = "Tecnico em Mecanica"
-    catMMAN = "Tecnico em Mec. de Manutencao"
-    catTMEQ = "Tecnico em Mec. do Cont. Qualidade"
-    catTIND = "Tecnico Industrial"
-    catTELM = "Tecnico em Eletromecanica"
+    catARQT = "t_Arquivista Tecnico"
+    catASSE = "t_Assistente Especializado"
+    catDESN = "t_Desenhista"
+    catDESP = "t_Desenhista Projetista"
+    catENGO = "t_Engenheiro"
+    catINSQ = "t_Inspetor de Cont. Qualidade"
+    catPROJ = "t_Projetista"
+    catTMET = "t_Tecnico de Met. e Processos"
+    catTPLA = "t_Tecnico de Planejamento"
+    catTCQU = "t_Tecnico de Cont. da Qualidade"
+    catTELC = "t_Tecnico em Eletricidade"
+    catTELE = "t_Tecnico em Eletronica"
+    catTINF = "t_Tecnico de Informatica"
+    catTMEC = "t_Tecnico em Mecanica"
+    catMMAN = "t_Tecnico em Mec. de Manutencao"
+    catTMEQ = "t_Tecnico em Mec. do Cont. Qualidade"
+    catTIND = "t_Tecnico Industrial"
+    catTELM = "t_Tecnico em Eletromecanica"
     
     # Unknown
-    catUNK  = "DESCONHECIDO"   # Unknown hours because of missing rules, programmer should check these.
+    catUNK  = "zz_DESCONHECIDO"   # Unknown hours because of missing rules, programmer should check these.
 
     # Work categories, ordered:
     catsORD1 = ( catCALD, catSOLD, catESME, catMACA, catTRAC, catAJUS, catFRES, 
@@ -148,22 +148,27 @@ color: blue;
         ('OP.MAQ.ESPECIALI',) : catMQSP,
         ('TORN.MEC.',) : catTORN,
         ('OP.CALAND','OP.CALAND.') : catCALA,
-        ('DESEMPENADOR') : catDESE,
+        ('DESEMPENADOR',) : catDESE,
         
         # Technical - Medium Class
-        ('ARQ. TEC.') : catARQT,
-        ('ASS.ESP.') : catASSE,
-        ('DESENHIST') : catDESN,
-        ('DES.PROJ.') : catDESP,
-        ('ENGENHEIRO') : catENGO,
-        ('INSP.C.QU') : catINSQ,
-        ('PROJETIST') : catPROJ,
-        ('TEC.M.PRO') : catTMET,
-        ('TEC.PLANE') : catTPLA,
-        ('TEC.CONT.') : catTCQU,
-        ('TEC.ELETR') : catTELC
-        
-        
+        ('ARQ. TEC.',) : catARQT,
+        ('ASS.ESP.',) : catASSE,
+        ('DESENHIST',) : catDESN,
+        ('DES.PROJ.',) : catDESP,
+        ('ENGENHEIRO',) : catENGO,
+        ('INSP.C.QU',) : catINSQ,
+        ('PROJETIST',) : catPROJ,
+        ('TEC.M.PRO',) : catTMET,
+        ('TEC.PLANE',) : catTPLA,
+        ('TEC.CONT.',) : catTCQU,
+        ('TEC.ELETRICIDADE',) : catTELC,
+        ('TEC.ELETRONICA',): catTELE,
+        ('TEC.INFOR',) : catTINF,
+        ('TEC.MEC.',) : catTMEC,
+        ('MEC.MAN.',) : catMMAN,
+        ('TEC.MEC.CONT.QUA',) : catTMEQ,
+        ('TEC.IND.',) : catTIND,
+        ('TEC.ELETROMECANI',): catTELM 
         
         }
 
@@ -197,9 +202,10 @@ color: blue;
         
         # Return a 'cargo' category if found
         for key in self.strcargomap.keys():
-            if cargo in key:
-                return self.strcargomap[key]
-                
+            for kvalue in key:
+                if cargo == kvalue: # must be identical, cannot use 'cargo in key'
+                    return self.strcargomap[key]
+
 
         # Return catUNK if not found, signalling that rules should be revised.
         return self.catUNK
@@ -270,6 +276,8 @@ color: blue;
             # HTML
             jcl = self.judgecliente(l)
             jca = self.judgecargo(l)
+            # Strip XXX_ from cargo
+            jca_strip = re.sub(r'^.*?_','',jca)
             
             
             # Alter formatting from outcome (cat/catmotiv/wts)
@@ -297,7 +305,7 @@ color: blue;
             o1.write('<td>%s</td>' % (cargo))
             o1.write('<td align="center">%s</td>' % (htipo))
             o1.write('<td align="left">%s</td>' % (tothora))
-            o1.write('<td align="left">%s</td>' % (jca,))
+            o1.write('<td align="left">%s</td>' % (jca_strip,))
             o1.write('<td align="left">%s</td>' % (jcl,))
             o1.write('</tr>')
             
@@ -329,11 +337,15 @@ color: blue;
             o1.write('<tr><td colspan="2"><b>%s</b> <i>%s</i></td></tr>' % (clnome,gclientoslist))
             o1.write('<tr><td>Especialidade: </td><td>Total de Horas: </td></tr>')
             for espec in clespecs:
-                o1.write('<tr><td>%s</td><td>%s</td></tr>' % (espec, self.jdata[clnome][espec]))
+                
+                # remove XXX_ in cargonames
+                espec_strip = re.sub(r'^.*?_','',espec)
+                
+                o1.write('<tr><td>%s</td><td>%s</td></tr>' % (espec_strip, self.jdata[clnome][espec]))
                 totclhora += self.jdata[clnome][espec]
                 
                 #CSV
-                o2.write('%s\t%s\r\n' % (espec, str(self.jdata[clnome][espec]).replace('.',',')))
+                o2.write('%s\t%s\r\n' % (espec_strip, str(self.jdata[clnome][espec]).replace('.',',')))
                 
                 
             #CSV
