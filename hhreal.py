@@ -278,6 +278,12 @@ background-color: red;
         # -- Ignorar --
         # -------------
 
+        # Apontador de Produção
+        if cargo.find("APONT.PRO") >= 0:
+            categ = self.catIGN
+            motiv = 'Cargo Ignorado: Tecnico de Planejamento'
+            return (categ, motiv)
+        
         # Técnico de Planejamento
         if cargo.find("TEC.PLANE") >= 0:
             categ = self.catIGN
