@@ -115,7 +115,7 @@ color: blue;
     catTELE = "t_Tecnico em Eletronica"
     catTINF = "t_Tecnico de Informatica"
     catTMEC = "t_Tecnico em Mecanica"
-    catMMAN = "t_Tecnico em Mec. de Manutencao"
+    catMMAN = "t_Mecanico de Manutencao"
     catTMEQ = "t_Tecnico em Mec. do Cont. Qualidade"
     catTIND = "t_Tecnico Industrial"
     catTELM = "t_Tecnico em Eletromecanica"
@@ -140,34 +140,34 @@ color: blue;
         ('CALDEIREIRO', 'CALDEIREIRO ESP') : catCALD,
         ('SOLDADOR',) : catSOLD,
         ('OP.ESMER.',) : catESME,
-        ('MACARIQUE',) : catMACA,
+        ('MACARIQUEIRO',) : catMACA,
         ('TRACADOR',) : catTRAC,
-        ('AJUST.MEC',) : catAJUS,
+        ('AJUST. MECANICO',) : catAJUS,
         ('FRESADOR',) : catFRES,
         ('OP.T.TERM',) : catFORN,
         ('OP.MAQ.ESPECIALI',) : catMQSP,
-        ('TORN.MEC.',) : catTORN,
-        ('OP.CALAND','OP.CALAND.') : catCALA,
+        ('TORN. MECANICO',) : catTORN,
+        ('OP. CALANDRA',) : catCALA,
         ('DESEMPENADOR',) : catDESE,
         
         # Technical - Medium Class
-        ('ARQ. TEC.',) : catARQT,
-        ('ASS.ESP.',) : catASSE,
-        ('DESENHIST',) : catDESN,
-        ('DES.PROJ.',) : catDESP,
+        ('ARQUIVI. TECNICO',) : catARQT,
+        ('ASS.ESPECIALIZAD',) : catASSE,
+        ('DESENHISTA',) : catDESN,
+        ('DES. PROJETISTA',) : catDESP,
         ('ENGENHEIRO',) : catENGO,
-        ('INSP.C.QU',) : catINSQ,
-        ('PROJETIST',) : catPROJ,
+        ('INSP.C.QUAL.',) : catINSQ,
+        ('PROJETISTA',) : catPROJ,
         ('TEC.M.PRO',) : catTMET,
-        ('TEC.PLANE',) : catTPLA,
-        ('TEC.CONT.',) : catTCQU,
+        ('TEC.PLANEJAMENTO',) : catTPLA,
+        ('TEC.CONTROLE QUA',) : catTCQU,
         ('TEC.ELETRICIDADE',) : catTELC,
         ('TEC.ELETRONICA',): catTELE,
-        ('TEC.INFOR',) : catTINF,
-        ('TEC.MEC.',) : catTMEC,
-        ('MEC.MAN.',) : catMMAN,
+        ('TEC. INFORMATICA',) : catTINF,
+        ('TEC. MECANICO','TEC. MECANICA') : catTMEC,
+        ('MEC. MANUTENCAO',) : catMMAN,
         ('TEC.MEC.CONT.QUA',) : catTMEQ,
-        ('TEC.IND.',) : catTIND,
+        ('TEC. INDUSTRIAL',) : catTIND,
         ('TEC.ELETROMECANI',): catTELM 
         
         }
