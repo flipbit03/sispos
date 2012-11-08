@@ -279,25 +279,25 @@ background-color: red;
         # -------------
 
         # Apontador de Produção
-        if cargo.find("APONT.PRO") >= 0:
+        if cargo.find("APONT. PRODUCAO") >= 0:
             categ = self.catIGN
             motiv = 'Cargo Ignorado: Tecnico de Planejamento'
             return (categ, motiv)
         
         # Técnico de Planejamento
-        if cargo.find("TEC.PLANE") >= 0:
+        if cargo.find("TEC.PLANEJAMENTO") >= 0:
             categ = self.catIGN
             motiv = 'Cargo Ignorado: Tecnico de Planejamento'
             return (categ, motiv)
 
         # Auxiliar Administrativo
-        if cargo.find("AUX.ADM") >= 0:
+        if cargo.find("AUX.ADMINISTRAT") >= 0:
             categ = self.catIGN
             motiv = 'Cargo Ignorado: Auxiliar Administrativo'
             return (categ, motiv)
 
         # Arquivista Técnico
-        if cargo.find("ARQ. TEC.") >= 0:
+        if cargo.find("ARQUIVI. TECNICO") >= 0:
             categ = self.catIGN
             motiv = 'Cargo Ignorado: Arquivista Tecnico'
             return (categ, motiv)
@@ -310,7 +310,7 @@ background-color: red;
             return (categ, motiv)
 
         # Departamentos ignorados
-        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC"):
+        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
@@ -373,7 +373,7 @@ background-color: red;
             return (categ,'')
 
         #ITE
-        if depto in ("ITI", "IT-CEP", "IT-CPL", "I-EES", "IG-CPR-1"):
+        if depto in ("ITI", "IT-CEP", "IT-CPL", "I-EES", "IS", "IS-CPS","ISF"):
             categ = self.catITE
             return (categ,'')
 
