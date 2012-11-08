@@ -14,7 +14,7 @@ class HHRealInt(HHReal):
 
     # No init needed because of HHReal's .dynfindfiles() method (Uses class name to find files)
 
-    # needed as there are no instructions in this class
+    # "pass" needed as there are no instructions in this class
     pass 
 
 if __name__ == "__main__":
