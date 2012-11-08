@@ -94,11 +94,23 @@ color: blue;
     catTRAC = "f_Tracador"
     catAJUS = "f_Ajustador Mecanico"
     catFRES = "f_Fresador"
-    catFORN = "f_Tratamento Termico"
+    catFORN = "f_Operador de Tratamento Termico"
     catMQSP = "f_Op. Maquina Especializado"
     catTORN = "f_Torneiro Mecanico"
     catCALA = "f_Op. Calandra"
     catDESE = "f_Desempenador"
+    catOPJT = "f_Operador de Jato e Pintura"
+    catPNTI = "f_Pintor Industrial"
+    
+    # Supervisors
+    catSALM = "f_Supervisor de Almoxarifado"
+    catSCAL = "f_Supervisor de Calderaria"
+    catSCON = "f_Supervisor de Conformacao"
+    catSJPI = "f_Supervisor de Jato e Pintura"
+    catSMCA = "f_Supervisor de Mov. Carga"
+    catSSOL = "f_Supervisor de Solda"
+    catSTRA = "f_Supervisor de Tracagem"
+    catSTRT = "f_Supervisor de Tratamento Termico"
     
     # Technical - Medium Class
     catARQT = "t_Arquivista Tecnico"
@@ -115,6 +127,7 @@ color: blue;
     catTELE = "t_Tecnico em Eletronica"
     catTINF = "t_Tecnico de Informatica"
     catTMEC = "t_Tecnico em Mecanica"
+    catTMMA = "t_Tecnico em Mecanica de Manutencao"
     catMMAN = "t_Mecanico de Manutencao"
     catTMEQ = "t_Tecnico em Mec. do Cont. Qualidade"
     catTIND = "t_Tecnico Industrial"
@@ -125,18 +138,21 @@ color: blue;
 
     # Work categories, ordered:
     catsORD1 = ( catCALD, catSOLD, catESME, catMACA, catTRAC, catAJUS, catFRES, 
-                 catFORN, catMQSP, catTORN, catCALA, catDESE )
+                 catFORN, catMQSP, catTORN, catCALA, catDESE, catOPJT, catPNTI )
+    
+    catsORD2 = (catSALM,catSCAL,catSCON,catSJPI,catSMCA,catSSOL,catSTRA,catSTRT)
                  
-    catsORD2 = ( catARQT,catASSE,catDESN,catDESP,catENGO,catINSQ,catPROJ,catTMET,
-                catTPLA,catTCQU,catTELC,catTELE,catTINF,catTMEC,catMMAN,catTMEQ,catTIND,catTELM )
+    catsORD3 = ( catARQT,catASSE,catDESN,catDESP,catENGO,catINSQ,catPROJ,catTMET,
+                catTPLA,catTCQU,catTELC,catTELE,catTINF,catTMEC,catTMMA,catMMAN,
+                catTMEQ,catTIND,catTELM )
                 
-    catsORD = catsORD1 + catsORD2 + (catUNK,)
+    catsORD = catsORD1 + catsORD2 + catsORD3 + (catUNK,)
                 
                 
     # STRING x "Cargo" mapping
     
     strcargomap = {
-        # Factory - Lower Class
+        # Factory - ORD1
         ('CALDEIREIRO', 'CALDEIREIRO ESP') : catCALD,
         ('SOLDADOR',) : catSOLD,
         ('OP.ESMER.',) : catESME,
@@ -149,8 +165,20 @@ color: blue;
         ('TORN. MECANICO',) : catTORN,
         ('OP. CALANDRA',) : catCALA,
         ('DESEMPENADOR',) : catDESE,
+        ('OP. JATO/PINTURA',) : catOPJT,
+        ('PINTOR INDUSTR.',) : catPNTI,
         
-        # Technical - Medium Class
+        # Supervisors - ORD2
+        ('SUP.ALMOXARIFADO',) : catSALM,
+        ('SUP. CALDEIRARIA',) : catSCAL,
+        ('MEST.DEFO',) : catSCON,
+        ('SUP.JATO/PINTURA',) : catSJPI,
+        ('SUP. MOV. CARGA',) : catSMCA, 
+        ('SUP.SOLDA',) : catSSOL, 
+        ('SUP.TRAC','SUP. TRACAGEM') : catSTRA, 
+        ('SUP.TRAT.TERMICO',) : catSTRT,                 
+        
+        # Technical - ORD3
         ('ARQUIVI. TECNICO',) : catARQT,
         ('ASS.ESPECIALIZAD',) : catASSE,
         ('DESENHISTA',) : catDESN,
@@ -165,6 +193,7 @@ color: blue;
         ('TEC.ELETRONICA',): catTELE,
         ('TEC. INFORMATICA',) : catTINF,
         ('TEC. MECANICO','TEC. MECANICA') : catTMEC,
+        ('TEC.MEC.MANUTEN.',) : catTMMA,
         ('MEC. MANUTENCAO',) : catMMAN,
         ('TEC.MEC.CONT.QUA',) : catTMEQ,
         ('TEC. INDUSTRIAL',) : catTIND,
