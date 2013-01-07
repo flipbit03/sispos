@@ -310,7 +310,7 @@ background-color: red;
             return (categ, motiv)
 
         # Departamentos ignorados
-        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
+        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
