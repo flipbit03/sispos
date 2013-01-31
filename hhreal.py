@@ -69,7 +69,7 @@ background-color: red;
     catITE  = "ITE"
     catTECM = "TEC.M.PRO"
     catICQ  = "ICQ"
-    catIGN  = "IGNORADO"       # Ignored hours
+    catIGN  = "NÃO ORÇADO"       # Ignored hours
     catUNK  = "DESCONHECIDO"   # Unknown hours because of missing rules, programmer should check these.
 
     # Work categories, ordered:
