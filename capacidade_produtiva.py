@@ -56,7 +56,7 @@ class CapacidadeProdutiva(BaseSISPOS):
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
         o1.write("INDICE DE CAPACIDADE PRODUTIVA DO I (ICPI-%s/%s)\n\n\n" % (f['#MES'], f['#ANO']))
 
-        o1.write("HORAS PRODUTIVAS DIRETAS:\n\n")
+        o1.write("HORAS PRODUTIVAS DIRETAS - FECHAMENTO EM \"%s\":\n\n" % (f['#DTFECH']))
         o1.write("\tTotal HH = %.2f\n\n" % (hpd))
         o1.write("\tTotal HH em pessoas = %d pessoas\n\n" % (hpd_pessoas))
 
