@@ -15,8 +15,8 @@ class CapacidadeProdutiva(BaseSISPOS):
                 ("#HPD","\nHH:\n\nHoras Produtivas Diretas (Total HH)"),
                 ## pessoal
                 ("#EFN","\nPessoal\n\nEfetivo NUCLEP (Tot. Pessoas)"), 
-                ("#EFPTL","Efetivo PERSONAL TECNICO + LAPA (Tot. Pessoas)"), 
-                ("#EFPTRPA","Efetivo PERSONAL TEMPORARIO + RPA (Tot. Pessoas)"), 
+                ("#EFPER","Efetivo PERSONAL (Tot. Pessoas)"), 
+                ("#EFLAP","Efetivo LAPA (Tot. Pessoas)"), 
                 ("#EFENGC","Efetivo ENGENHEIRA CEDIDA (Tot. Pessoas)")
                 )
 
@@ -29,12 +29,12 @@ class CapacidadeProdutiva(BaseSISPOS):
         
         # efetivo
         efn = int(f['#EFN'])
-        efptl = int(f['#EFPTL'])
-        efptrpa = int(f['#EFPTRPA'])
+        efper = int(f['#EFPER'])
+        eflap = int(f['#EFLAP'])
         efengc = int(f['#EFENGC'])
         
         # total efetivo
-        eftotal = efn + efptl + efptrpa + efengc
+        eftotal = efn + efper + eflap + efengc
 
         # dias uteis
         diu = int(f['#DIU'])
@@ -61,15 +61,13 @@ class CapacidadeProdutiva(BaseSISPOS):
         o1.write("EFETIVO DO I - BIBLIA DE %s/%s:\n\n\tTotais:\n\n" % (f['#MES'], f['#ANO']))
 
         o1.write("\tNUCLEP:\t\t\t\t%d pessoas\n" % (efn))
-        o1.write("\tPERSONAL TECNICO + LAPA:\t%d pessoas\n" % (efptl))
-        o1.write("\tPERSONAL TEMPORARIO + RPA:\t%d pessoas\n" % (efptrpa))
+        o1.write("\tPERSONAL:\t\t\t%d pessoas\n" % (efper))
+        o1.write("\tLAPA:\t\t\t\t%d pessoas\n" % (eflap))
         o1.write("\tENGENHEIRA CEDIDA:\t\t%d pessoas\n" % (efengc))
         o1.write("\tAPRENDIZES:\t\t\t(Não considerar)\n")
         o1.write('\n\tTotal: %d pessoas\n' % (eftotal,))
         
-        
         #o1.write("\n\n\tDias Uteis em %s/%s = %d\n\n" % (f['#MES'],f['#ANO'], diu))
-
 
         o1.write('\n\n')
         o1.write('               (HPD / %2d dias úteis / 8h)\n' % (diu,))
