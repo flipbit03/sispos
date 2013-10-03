@@ -171,7 +171,7 @@ color: blue;
         # Supervisors - ORD2
         ('SUP.ALMOXARIFADO',) : catSALM,
         ('SUP. CALDEIRARIA',) : catSCAL,
-        ('MEST.DEFO',) : catSCON,
+        ('SUP.CONFORMACAO',) : catSCON,
         ('SUP.JATO/PINTURA',) : catSJPI,
         ('SUP. MOV. CARGA',) : catSMCA, 
         ('SUP.SOLDA',) : catSSOL, 
