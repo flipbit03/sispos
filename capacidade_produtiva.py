@@ -3,7 +3,6 @@ import os
 import re
 from sisposbase.sispos import BaseSISPOS
 
-
 class CapacidadeProdutiva(BaseSISPOS):
     findfiles = ( 
                 ## datas 
@@ -16,7 +15,7 @@ class CapacidadeProdutiva(BaseSISPOS):
                 ## pessoal
                 ("#EFN","\nPessoal\n\nEfetivo NUCLEP (Tot. Pessoas)"), 
                 ("#EFPER","Efetivo PERSONAL (Tot. Pessoas)"), 
-                ("#EFLAP","Efetivo LAPA (Tot. Pessoas)"), 
+                ("#EFRPA","Efetivo RPA (Tot. Pessoas)"), 
                 ("#EFENGC","Efetivo ENGENHEIRA CEDIDA (Tot. Pessoas)")
                 )
 
@@ -30,11 +29,11 @@ class CapacidadeProdutiva(BaseSISPOS):
         # efetivo
         efn = int(f['#EFN'])
         efper = int(f['#EFPER'])
-        eflap = int(f['#EFLAP'])
+        efrpa = int(f['#EFRPA'])
         efengc = int(f['#EFENGC'])
         
         # total efetivo
-        eftotal = efn + efper + eflap + efengc
+        eftotal = efn + efper + efrpa + efengc
 
         # dias uteis
         diu = int(f['#DIU'])
@@ -62,7 +61,7 @@ class CapacidadeProdutiva(BaseSISPOS):
 
         o1.write("\tNUCLEP:\t\t\t\t%d pessoas\n" % (efn))
         o1.write("\tPERSONAL:\t\t\t%d pessoas\n" % (efper))
-        o1.write("\tLAPA:\t\t\t\t%d pessoas\n" % (eflap))
+        o1.write("\tRPA:\t\t\t\t%d pessoas\n" % (efrpa))
         o1.write("\tENGENHEIRA CEDIDA:\t\t%d pessoas\n" % (efengc))
         o1.write("\tAPRENDIZES:\t\t\t(Não considerar)\n")
         o1.write('\n\tTotal: %d pessoas\n' % (eftotal,))
