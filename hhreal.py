@@ -310,11 +310,25 @@ background-color: red;
             return (categ, motiv)
 
         # Departamentos ignorados
-        if depto in ("IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "ITT",
+        if depto in ("IMP", "IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "ITT",
                     "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
+			
+		# -------------------
+        # -- Setor + Cargo --
+        # -------------------
+		
+		# IM - Considerar apenas TEC MECANICA --> ITE (Ignorar outras profissoes)
+        if depto in ("IM"):
+			if cargo in ("TEC. MECANICA"):
+				categ = self.catITE
+				return (categ,'')
+			else:
+				categ = self.catIGN
+				motiv = "IM Ignorado (Apenas TEC MEC --> ITE)"
+				return (categ,motiv)
 
         # -----------
         # -- CARGO --
