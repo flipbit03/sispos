@@ -220,10 +220,10 @@ background-color: red;
         
         rv = []
 
-        rv.append('<table border="1">')
-        rv.append('<tr>')
-        rv.append('<tr><td colspan="5" align="center">%s</td></tr>' % (os))
-        rv.append('<tr><td>Categoria</td><td>Horas Totais:</td><td>Horas 80</td><td>Horas 18</td><td>Horas 92</td></tr>')
+        rv.append('<table border="1">\n')
+        rv.append('<tr>\n')
+        rv.append('<tr><td colspan="5" align="center">%s</td></tr>\n' % (os))
+        rv.append('<tr><td>Categoria</td><td>Horas Totais:</td><td>Horas 80</td><td>Horas 18</td><td>Horas 92</td></tr>\n')
 
         z = gvn(self.jdata, os)
 
@@ -239,7 +239,7 @@ background-color: red;
                     h80 = gvn(t, self.hour80)
                     h92 = gvn(t, self.hour92)
                 
-                rv.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (categ, ht, h80, h18, h92))
+                rv.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (categ, ht, h80, h18, h92))
 
         rv.append('</table>')
 
@@ -310,8 +310,8 @@ background-color: red;
             return (categ, motiv)
 
         # Departamentos ignorados
-        if depto in ("IMP", "IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", "ITT",
-                    "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
+        if depto in ("IMP", "IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", 
+                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
@@ -420,26 +420,26 @@ background-color: red;
         o2 = self.getoutputfile(ext='csv', append='%s-%s-excel' % (f['#MES'], f['#ANO']))
 
         # init output html
-        o1.write('<!DOCTYPE html>')
-        o1.write('<html>')
-        o1.write('<head><title>%s - SISPOS</title><style>%s</style>' % (self.__class__.__name__.upper(), self.inlinecss))
+        o1.write('<!DOCTYPE html>\n')
+        o1.write('<html>\n')
+        o1.write('<head><title>%s - SISPOS</title><style>%s</style>\n' % (self.__class__.__name__.upper(), self.inlinecss))
         
-        o1.write('<body>')
-        o1.write('<h1>%s</h1>' % (self.__class__.__name__.upper()))
+        o1.write('<body>\n')
+        o1.write('<h1>%s</h1>\n' % (self.__class__.__name__.upper()))
 
         # Get OS list
         oses = list(set([x[0] for x in fs]))
         oses.sort()
         for os in oses:
             # Open HTML TABLE
-            o1.write('<table>')
-            o1.write('<tr>')
-            o1.write("""<th width="100">codped</th>
-                    <th width="170">cargo</th>
-                    <th width="80">depto</th>
-                    <th width="100">fa-ativ</th>
-                    <th width="50">horas</th>
-                    <th width="150">outcome</th>""")
+            o1.write('<table>\n')
+            o1.write('<tr>\n')
+            o1.write("""<th width="100">codped</th>\n
+                    <th width="170">cargo</th>\n
+                    <th width="80">depto</th>\n
+                    <th width="100">fa-ativ</th>\n
+                    <th width="50">horas</th>\n
+                    <th width="150">outcome</th>\n""")
             o1.write('</tr>')
 
             #In this OS, get distinct PROFESSIONS
@@ -449,8 +449,11 @@ background-color: red;
                 # List and process hours for this profession
                 lines = [x for x in fs if x[0] == os and x[1] == profession]
 
-                for line in lines:
+                for crude_line in lines:
                     ## MAIN LOOP HERE!
+                    
+                    ## Transform crude_line in line by stripping whitespaces from all variables.
+                    line = [__field.strip() for __field in crude_line]
 
                     ## Process OS statistics
                     self.processjdata(line)
