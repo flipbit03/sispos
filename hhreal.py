@@ -329,6 +329,17 @@ background-color: red;
 				categ = self.catIGN
 				motiv = "IM Ignorado (Apenas TEC MEC --> ITE)"
 				return (categ,motiv)
+				
+				
+		# ICM - Considerar apenas TEC INDUSTRIAL --> TEC MET PROC (Ignorar outras profissoes)
+        if depto in ("ICM"):
+			if cargo in ("TEC. INDUSTRIAL"):
+				categ = self.catTECM
+				return (categ,'')
+			else:
+				categ = self.catIGN
+				motiv = "ICM Ignorado (Apenas TEC IND --> Tec Met Proc)"
+				return (categ,motiv)
 
         # -----------
         # -- CARGO --
