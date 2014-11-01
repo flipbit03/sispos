@@ -12,7 +12,7 @@ class HHRealInt(HHReal):
     # Initalization parameters
     # ----------------------------------
 
-    # No init needed because of HHReal's .dynfindfiles() method (Uses class name to find files)
+    # No  init needed because of HHReal's .dynfindfiles() method (Uses class name to find files)
 
     # "pass" needed as there are no instructions in this class
     pass 
