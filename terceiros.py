@@ -15,6 +15,23 @@ class Terceiros(BaseSISPOS):
     # ex.out: 17/12/2012|820180000|    1   | 23015|  8.0  |    13     |
     # fields:    DATA   | CODPED  | CODCLI | MATR | HORAS | ATIVIDADE | <ignored>
     
+    Eis o sql para extrair dados no formato acima:
+    
+    ---
+    unload to "terceiros09.txt"
+
+    select
+    a.data, a.codped, p.codcli, a.matr, a.hora, a.atividade ativ
+
+    from
+    aprop2009 a, outer pedidos p
+
+    where
+    a.codped = p.codped and
+    a.codped is not null and
+    a.matr > 9999
+    ---
+    
     A partir do campo CODCLI (1=nuclep / etc=Clientes) agrupamos as horas em Serviços Internos NCP
     """
 
