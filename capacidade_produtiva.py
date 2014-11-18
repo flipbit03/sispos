@@ -4,50 +4,62 @@ import re
 from sisposbase.sispos import BaseSISPOS
 
 class CapacidadeProdutiva(BaseSISPOS):
-    findfiles = ( 
+
+    ## Altere aqui as categorias de pessoal informadas pela Stefania/ICP
+    totpescategs = (
+    "NUCLEP", 
+    "PERSONAL ETN", 
+    "MAZINI", 
+    "RPA", 
+    "ENGENHEIRA CEDIDA"
+    )
+    
+    findfiles = [ 
                 ## datas 
-                ("#DTFECH","Datas:\n\nData de Fechamento do Mes (DD/MM/AAAA)"),
+                ("#DTFECH","Data de Fechamento do Mes (DD/MM/AAAA)"),
                 ("#MES","Mes (FORMATO: MM)"),
                 ("#ANO","Ano (FORMATO: AAAA)"),
                 ("#DIU","Quantidade de Dias Uteis no Mes"),
                 ## HH 
                 ("#HPD","\nHH:\n\nHoras Produtivas Diretas (Total HH)"),
-                ## pessoal
-                ("#EFN","\nPessoal\n\nEfetivo NUCLEP (Tot. Pessoas)"), 
-                ("#EFPER","Efetivo PERSONAL (Tot. Pessoas)"), 
-                ("#EFRPA","Efetivo RPA (Tot. Pessoas)"), 
-                ("#EFENGC","Efetivo ENGENHEIRA CEDIDA (Tot. Pessoas)")
-                )
-
+                ]
+    
+    def dynfindfiles(self):
+        ## Adiciona perguntas de PESSOAL de acordo com self.totpescategs
+        for categname in self.totpescategs:
+            self.findfiles.append( ("#EF%s" % (categname,), "Efetivo %s (Tot. Pessoas)" % (categname,)) )
+    
     def process (self, f):
-        # Strip newlines and carriage returns
-        
+    
+        # horas produtivas diretas em HH
         f['#HPD'] = f['#HPD'].replace(',','.')
-        
         hpd = float(f['#HPD'])
         
-        # efetivo
-        efn = int(f['#EFN'])
-        efper = int(f['#EFPER'])
-        efrpa = int(f['#EFRPA'])
-        efengc = int(f['#EFENGC'])
+        #import code; code.interact(local=locals())
         
-        # total efetivo
-        eftotal = efn + efper + efrpa + efengc
+        # Categorias que contem efetivo em PESSOAS (Começam com #EF)
+        categorias_efetivo = [categ for categ in f.keys() if categ.find('#EF') <> -1]
 
-        # dias uteis
+        # Soma todas as pessoas das categorias
+        eftotal = sum([int(f[categ]) for categ in categorias_efetivo])
+
+        # Dias Uteis
         diu = int(f['#DIU'])
         
         #### CALCULA     
-        ## capacidade produtiva do i
+        ## Capacidade Produtiva do I
         
+        ## Horas produtivas diretas, em PESSOAS
+        
+        ## total de hh dividido por (dias uteis vezes 8 horas de trabalho)
         hpd_pessoas = int(round((hpd/float(diu*8))))
         
         cpi = hpd_pessoas / (float(eftotal))
         
-        
+        #### GERA ARQUIVO TXT
+        ##
         o1 = self.getoutputfile(append='%s-%s' % (f['#MES'], f['#ANO']))
-
+        
         o1.write("\n")
         o1.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
@@ -59,20 +71,18 @@ class CapacidadeProdutiva(BaseSISPOS):
 
         o1.write("EFETIVO DO I - BIBLIA DE %s/%s:\n\n\tTotais:\n\n" % (f['#MES'], f['#ANO']))
 
-        o1.write("\tNUCLEP:\t\t\t\t%d pessoas\n" % (efn))
-        o1.write("\tPERSONAL:\t\t\t%d pessoas\n" % (efper))
-        o1.write("\tRPA:\t\t\t\t%d pessoas\n" % (efrpa))
-        o1.write("\tENGENHEIRA CEDIDA:\t\t%d pessoas\n" % (efengc))
-        o1.write("\tAPRENDIZES:\t\t\t(Não considerar)\n")
-        o1.write('\n\tTotal: %d pessoas\n' % (eftotal,))
+        for categ in self.totpescategs:
+            fcateg = categ.ljust(23)
+            dictcateg = '#EF%s' % (categ)
+            o1.write("\t%s%d pessoas\n" % (fcateg, int(f[dictcateg])))
         
-        #o1.write("\n\n\tDias Uteis em %s/%s = %d\n\n" % (f['#MES'],f['#ANO'], diu))
-
+        o1.write('\n\t%s%d pessoas\n' % ("Total:".ljust(23), eftotal))
+        
         o1.write('\n\n')
         o1.write('               (HPD / %2d dias úteis / 8h)\n' % (diu,))
         o1.write(' INDICE CP = ------------------------------ = %.0f%%\n' % ((cpi*100)))
         o1.write('                       EFETIVO\n')
         
-                
+
 a = CapacidadeProdutiva()
 a.run()
