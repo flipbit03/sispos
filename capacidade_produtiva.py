@@ -9,8 +9,8 @@ class CapacidadeProdutiva(BaseSISPOS):
     totpescategs = (
     "NUCLEP", 
     "PERSONAL ETN", 
-    "MAZINI", 
-    "RPA", 
+    "MAZZINI", 
+    #"RPA", 
     "ENGENHEIRA CEDIDA"
     )
     
