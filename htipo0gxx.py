@@ -109,7 +109,7 @@ color: blue;
     catSJPI = "f_Supervisor de Jato e Pintura"
     catSMCA = "f_Supervisor de Mov. Carga"
     catSSOL = "f_Supervisor de Solda"
-    catSTRA = "f_Supervisor de Tracagem"
+    catSTRA = "f_Supervisor de Tracagem / Corte"
     catSTRT = "f_Supervisor de Tratamento Termico"
     
     # Technical - Medium Class
@@ -140,7 +140,8 @@ color: blue;
     catsORD1 = ( catCALD, catSOLD, catESME, catMACA, catTRAC, catAJUS, catFRES, 
                  catFORN, catMQSP, catTORN, catCALA, catDESE, catOPJT, catPNTI )
     
-    catsORD2 = (catSALM,catSCAL,catSCON,catSJPI,catSMCA,catSSOL,catSTRA,catSTRT)
+    catsORD2 = ( catSALM, catSCAL, catSCON, catSJPI, catSMCA, catSSOL, catSTRA,
+                 catSTRT )
                  
     catsORD3 = ( catARQT,catASSE,catDESN,catDESP,catENGO,catINSQ,catPROJ,catTMET,
                 catTPLA,catTCQU,catTELC,catTELE,catTINF,catTMEC,catTMMA,catMMAN,
@@ -175,7 +176,7 @@ color: blue;
         ('SUP.JATO/PINTURA',) : catSJPI,
         ('SUP. MOV. CARGA',) : catSMCA, 
         ('SUP.SOLDA',) : catSSOL, 
-        ('SUP.TRAC','SUP. TRACAGEM') : catSTRA, 
+        ('SUP.TRAC','SUP. TRACAGEM', 'SUP. TRACAGEM/CORTE') : catSTRA, 
         ('SUP.TRAT.TERMICO',) : catSTRT,                 
         
         # Technical - ORD3
@@ -288,7 +289,7 @@ color: blue;
         o1.write('<tr>')
         o1.write("""<th width="100">codped</th>
                 <th width="220">Cliente</th>
-                <th width="80">Cargo</th>
+                <th width="195">Cargo</th>
                 <th width="10">Htipo</th>
                 <th width="80">Horas</th>
                 <th width="250">Especialidade:</th>

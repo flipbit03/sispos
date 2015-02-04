@@ -10,7 +10,7 @@ class CapacidadeProdutiva(BaseSISPOS):
     "NUCLEP", 
     "PERSONAL ETN", 
     "MAZZINI", 
-    #"RPA", 
+    "RPA", 
     "ENGENHEIRA CEDIDA"
     )
     
