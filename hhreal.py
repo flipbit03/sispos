@@ -310,7 +310,7 @@ background-color: red;
             return (categ, motiv)
 
         # Departamentos ignorados
-        if depto in ("IMP", "IC", "ICC", "ICP", "IG-1", "IG-2", "IG-3", "IG-CPR-2", 
+        if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2", 
                     "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
@@ -399,7 +399,7 @@ background-color: red;
             return (categ,'')
 
         #ITE
-        if depto in ("ITI", "IT-CEP", "IT-CPL", "I-EES", "IS", "IS-CPS","ISF"):
+        if depto in ("IEI", "IE-CEP", "IE-CPR", "IE-CES", "IS", "IS-CPS", "ISF"):
             categ = self.catITE
             return (categ,'')
 
@@ -429,6 +429,9 @@ background-color: red;
         o1 = self.getoutputfile(ext='html', append='%s-%s' % (f['#MES'], f['#ANO']))
         # Get output file for CSV
         o2 = self.getoutputfile(ext='csv', append='%s-%s-excel' % (f['#MES'], f['#ANO']))
+        
+        # Get output variable file for UNKNOWN profession x dept mappings.
+        unknownhours = []
 
         # init output html
         o1.write('<!DOCTYPE html>\n')
@@ -486,6 +489,10 @@ background-color: red;
                         trtitle = 'title="%s"' % (catmotiv)
                     elif cat == self.catUNK: # Unknown hours (Programmer should check these so highlight!)
                         trclass = 'class="unknownhour"'
+                        
+                        # Append unknown hours to list of unknown hours.
+                        unknownhours.append("DESCONHECIDO\t%s\t%s" % (depto, descricao))
+                        
                     else:
                         trclass = 'class="normalhour"' # Normal hours
                         if ('h18' in wts) or ('h80' in wts) or ('h92' in wts):
@@ -548,6 +555,24 @@ background-color: red;
         o3 = self.getoutputfile(ext='txt', append='%s-%s-totativ' % (f['#MES'], f['#ANO']))
         o3.write(self.generatejdata2txt(f))
 
+        # ###############
+        # Unknown Hours
+        # ###############
+        
+        if unknownhours:
+            print "\n****\nAviso: Horas DESCONHECIDAS encontradas, Verificar!\n****"
+            
+            unk_nodup = list(set(unknownhours))
+            
+            unk_nodup.sort()
+            
+            unk_nodup.insert(0,"Categoria\tDepto.\tProfissao")
+            
+            o3 = self.getoutputfile(ext='txt', append='%s-%s-desconhecido' % (f['#MES'], f['#ANO']))
+            o3.write("\n".join(unk_nodup))
+
+        
+        
         return self.jdata
         
 
