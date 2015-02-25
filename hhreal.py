@@ -311,7 +311,7 @@ background-color: red;
 
         # Departamentos ignorados
         if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2", 
-                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IPF/MC", "IPF"):
+                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IP-CMI/MC", "IP-CMI", "IPS"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
@@ -331,14 +331,14 @@ background-color: red;
 				return (categ,motiv)
 				
 				
-		# ICM - Considerar apenas TEC INDUSTRIAL --> TEC MET PROC (Ignorar outras profissoes)
-        if depto in ("ICM"):
+		# IMC - Considerar apenas TEC INDUSTRIAL --> TEC MET PROC (Ignorar outras profissoes)
+        if depto in ("IMC"):
 			if cargo in ("TEC. INDUSTRIAL"):
 				categ = self.catTECM
 				return (categ,'')
 			else:
 				categ = self.catIGN
-				motiv = "ICM Ignorado (Apenas TEC IND --> Tec Met Proc)"
+				motiv = "IMC Ignorado (Apenas TEC IND --> Tec Met Proc)"
 				return (categ,motiv)
 
         # -----------
@@ -354,60 +354,59 @@ background-color: red;
         # -- Setores --
         # -------------
 
-        #Tracagem
-        if depto in ("IPF/T", "IPF-T"):
+        # Tracagem
+        if depto in ("IP-CMI/T"):
             categ = self.catTRAC
             return (categ,'')
 
-        #Corte
-        if depto in ("IPF/C", "IPF-C"):
+        # Corte
+        if depto in ("IP-CMI/C"):
             categ = self.catCORT
             return (categ,'')
 
-        #Calandra
-        if depto in ("IP-CUC/C", "IP-CUC/D", "IP-CPP-D"):
+        # Calandra
+        if depto in ("IP-CUC/C"):
             categ = self.catCALA
             return (categ,'')
 
-        #Montagem
-        if depto in ("IPF/M"):
+        # Montagem
+        if depto in ("IP-CMI/M"):
             categ = self.catMONT
             return (categ,'')
-        elif depto in ("IPF") and (cargo.find('IND.') >= 0):
+        elif depto in ("IP-CMI") and (cargo.find('IND.') >= 0):
             categ = self.catMONT
             motiv = "Regra especial: Tecnico Industrial no IPF"
             return (categ,motiv)
 
-        #Soldagem
-        if depto in ("IPF/S"):
+        # Soldagem
+        if depto in ("IPS/S"):
             categ = self.catSOLD
             return (categ,'')
 
-        #Tratamento Termico
-        if depto in ("IPF/TT"):
+        # Tratamento Termico
+        if depto in ("IPS/TT"):
             categ = self.catTRAT
             return (categ,'')
 
-        #Jato/Pintura
-        if depto in ("IPF/JP"):
+        # Jato/Pintura
+        if depto in ("IP-CMI/JP"):
             categ = self.catJATO
             return (categ,'')
 
-        #Usinagem/Ferramentaria
+        # Usinagem/Ferramentaria
         if depto in ("IP-CUC/U", "IP-CUC/F"):
             categ = self.catUSIF
             return (categ,'')
 
-        #ITE
+        # "ITE" (Engenharia Geral)
         if depto in ("IEI", "IE-CEP", "IE-CPR", "IE-CES", "IS", "IS-CPS", "ISF"):
             categ = self.catITE
             return (categ,'')
 
-        #ICQ
+        # IQ
         if depto in ("IQ"):
             categ = self.catICQ
             return (categ,'')
-
 
         # Else? DESCONHECIDO (Programmer should check it out)
         return (categ, motiv)

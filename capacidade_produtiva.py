@@ -21,7 +21,8 @@ class CapacidadeProdutiva(BaseSISPOS):
                 ("#ANO","Ano (FORMATO: AAAA)"),
                 ("#DIU","Quantidade de Dias Uteis no Mes"),
                 ## HH 
-                ("#HPD","\nHH:\n\nHoras Produtivas Diretas (Total HH)"),
+                ("#HPDR","HH Capacidade Produtiva \"Real\" (Total HH)"),
+                ("#HPDP","HH Capacidade Produtiva \"Planejada\" (Total HH)")
                 ]
     
     def dynfindfiles(self):
@@ -30,10 +31,13 @@ class CapacidadeProdutiva(BaseSISPOS):
             self.findfiles.append( ("#EF%s" % (categname,), "Efetivo %s (Tot. Pessoas)" % (categname,)) )
     
     def process (self, f):
-    
-        # horas produtivas diretas em HH
-        f['#HPD'] = f['#HPD'].replace(',','.')
-        hpd = float(f['#HPD'])
+        # Horas Produtivas Diretas "Reais" 
+        f['#HPDR'] = f['#HPDR'].replace(',','.')
+        hpd_real = float(f['#HPDR'])
+        
+        # Horas Produtivas Diretas "Planejadas" 
+        f['#HPDP'] = f['#HPDP'].replace(',','.')
+        hpd_plane = float(f['#HPDP'])
         
         #import code; code.interact(local=locals())
         
@@ -49,12 +53,15 @@ class CapacidadeProdutiva(BaseSISPOS):
         #### CALCULA     
         ## Capacidade Produtiva do I
         
-        ## Horas produtivas diretas, em PESSOAS
+        ## - Horas Produtivas Diretas REAIS, em PESSOAS
+        ## - Total de hh dividido por (dias uteis vezes 8 horas de trabalho)
+        hpd_real_pessoas = int(round((hpd_real/float(diu*8))))
+        cpi_real = hpd_real_pessoas / (float(eftotal))
         
-        ## total de hh dividido por (dias uteis vezes 8 horas de trabalho)
-        hpd_pessoas = int(round((hpd/float(diu*8))))
-        
-        cpi = hpd_pessoas / (float(eftotal))
+        ## - Horas Produtivas Diretas PLANEJADAS, em PESSOAS
+        ## - Total de hh dividido por (dias uteis vezes 8 horas de trabalho)
+        hpd_plane_pessoas = int(round((hpd_plane/float(diu*8))))
+        cpi_plane = hpd_plane_pessoas / (float(eftotal))
         
         #### GERA ARQUIVO TXT
         ##
@@ -63,11 +70,15 @@ class CapacidadeProdutiva(BaseSISPOS):
         o1.write("\n")
         o1.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
-        o1.write("INDICE DE CAPACIDADE PRODUTIVA DO I (ICPI-%s/%s)\n\n\n" % (f['#MES'], f['#ANO']))
+        o1.write("INDICE DE CAPACIDADE PRODUTIVA DO I - REAL E PLANEJADO (ICPI_R e ICPI_P %s/%s)\n\n\n" % (f['#MES'], f['#ANO']))
 
-        o1.write("HORAS PRODUTIVAS DIRETAS - FECHAMENTO EM \"%s\":\n\n" % (f['#DTFECH']))
-        o1.write("\tTotal HH = %.2f\n\n" % (hpd))
-        o1.write("\tTotal HH em pessoas = %d pessoas\n\n" % (hpd_pessoas))
+        o1.write("HORAS PRODUTIVAS DIRETAS REAIS      (hpd_r) - FECHAMENTO EM \"%s\":\n\n" % (f['#DTFECH']))
+        o1.write("\tTotal HH = %.2f\n\n" % (hpd_real))
+        o1.write("\tTotal HH em pessoas = %d pessoas\n\n" % (hpd_real_pessoas))
+        
+        o1.write("HORAS PRODUTIVAS DIRETAS PLANEJADAS (hpd_p) - FECHAMENTO EM \"%s\":\n\n" % (f['#DTFECH']))
+        o1.write("\tTotal HH = %.2f\n\n" % (hpd_plane))
+        o1.write("\tTotal HH em pessoas = %d pessoas\n\n" % (hpd_plane_pessoas))
 
         o1.write("EFETIVO DO I - BIBLIA DE %s/%s:\n\n\tTotais:\n\n" % (f['#MES'], f['#ANO']))
 
@@ -79,9 +90,14 @@ class CapacidadeProdutiva(BaseSISPOS):
         o1.write('\n\t%s%d pessoas\n' % ("Total:".ljust(23), eftotal))
         
         o1.write('\n\n')
-        o1.write('               (HPD / %2d dias úteis / 8h)\n' % (diu,))
-        o1.write(' INDICE CP = ------------------------------ = %.0f%%\n' % ((cpi*100)))
-        o1.write('                       EFETIVO\n')
+        o1.write('                   (hpd_r / %2d dias úteis / 8h)\n' % (diu,))
+        o1.write(' INDICE ICPI_R = ------------------------------ = %.0f%%\n' % ((cpi_real*100)))
+        o1.write('                           EFETIVO\n')
+        
+        o1.write('\n\n')
+        o1.write('                   (hpd_p / %2d dias úteis / 8h)\n' % (diu,))
+        o1.write(' INDICE ICPI_P = ------------------------------ = %.0f%%\n' % ((cpi_plane*100)))
+        o1.write('                           EFETIVO\n\n')
         
 
 a = CapacidadeProdutiva()
