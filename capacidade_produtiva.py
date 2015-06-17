@@ -85,7 +85,13 @@ class CapacidadeProdutiva(BaseSISPOS):
         for categ in self.totpescategs:
             fcateg = categ.ljust(23)
             dictcateg = '#EF%s' % (categ)
-            o1.write("\t%s%d pessoas\n" % (fcateg, int(f[dictcateg])))
+            pessoas_categ = int(f[dictcateg])
+            
+            if not pessoas_categ:
+                print "Aviso: pulando categoria %s (sem colaboradores)" % (categ,)
+                continue
+            else:
+                o1.write("\t%s%d pessoas\n" % (fcateg, pessoas_categ))
         
         o1.write('\n\t%s%d pessoas\n' % ("Total:".ljust(23), eftotal))
         
