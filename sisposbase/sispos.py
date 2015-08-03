@@ -31,18 +31,21 @@ class BaseSISPOS:
         self.dynfindfiles()
         
         if self.findfiles:
-            #Arquivos
+            # Arquivos
             files = [b for b in self.findfiles if not b[0][0] == '#']
             print "Precisamos de %d arquivo(s)...\n" % (len(files))
             for entry in files:
                 fname, freg = entry
                 outfname, outdata = findfilel(self.inputpath, fname, freg)
                 if outfname and outdata:
-                    self.inputfiles[fname] = outdata
+                    if fname[0] == "!":
+                        self.inputfiles[fname] = outfname
+                    else:
+                        self.inputfiles[fname] = outdata
 
             print ''
 
-            #Perguntas
+            # Perguntas
             questions = [b for b in self.findfiles if b[0][0] == '#']
             print "Precisamos fazer %d pergunta(s)...\n" % (len(questions))
             for entry in questions:
