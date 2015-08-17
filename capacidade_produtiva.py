@@ -8,9 +8,9 @@ class CapacidadeProdutiva(BaseSISPOS):
     ## Altere aqui as categorias de pessoal informadas pela Stefania/ICP
     totpescategs = (
     "NUCLEP", 
+    "RPA", 
     "PERSONAL ETN", 
     "MAZZINI", 
-    "RPA", 
     "ENGENHEIRA CEDIDA"
     )
     
