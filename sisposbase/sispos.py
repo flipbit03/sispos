@@ -2,8 +2,8 @@
 import os
 from filefinder import findfile, findfilel
 
-INPUTPATH = os.path.join(os.getcwd(), "inputs")
-OUTPUTPATH = os.path.join(os.getcwd(), "outputs")
+INPUTPATH = os.path.join(os.getcwdu(), "inputs")
+OUTPUTPATH = os.path.join(os.getcwdu(), "outputs")
 
 class BaseSISPOS:
     #FILL THIS IN
@@ -42,8 +42,7 @@ class BaseSISPOS:
                         self.inputfiles[fname] = outfname
                     else:
                         self.inputfiles[fname] = outdata
-
-            print ''
+                print ""
 
             # Perguntas
             questions = [b for b in self.findfiles if b[0][0] == '#']
@@ -53,6 +52,7 @@ class BaseSISPOS:
                 outdata = raw_input(fquestionprompt+" ? ")
                 if outdata:
                     self.inputfiles[fname] = outdata
+                print ""
 
             # Garantir que temos tudo que precisamos
             try:
@@ -62,8 +62,6 @@ class BaseSISPOS:
             except:
                 self.canrun = False
 
-           
-                
         else:
             print "Sem arquivos de entrada"
 

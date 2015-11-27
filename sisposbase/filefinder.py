@@ -1,7 +1,10 @@
 # -*- coding: cp1252 -*-
-import os, sys, re 
+import os
+import re
+import locale
 
-def findfile(searchdirectory, idname, regexp):
+def findfile(_searchdirectory, idname, regexp):
+    searchdirectory = unicode(_searchdirectory)
     retval = ""
     print "Procurando por %s dentro de \"%s\"..." % (idname.upper(), searchdirectory)
     flist = os.listdir(searchdirectory)
@@ -11,7 +14,9 @@ def findfile(searchdirectory, idname, regexp):
     matches = filter(lambda x: compre.search(os.path.basename(x)), arqs)
 
     for fname in matches:
-        if raw_input(u"\to arquivo %s e realmente o arquivo \"%s\"? [s/n]: " % (idname.upper(), os.path.basename(fname))).upper() == "S":
+        question = u"  O arquivo %s e realmente o arquivo \"%s\"? [s/n]:" % (idname.upper(), os.path.basename(fname))
+        print question,
+        if raw_input().upper() == "S":
             retval = fname
             break
 
