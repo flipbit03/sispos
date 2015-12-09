@@ -399,7 +399,7 @@ background-color: red;
             return (categ,'')
 
         # "ITE" (Engenharia Geral)
-        if depto in ("IEI", "IE-CEP", "IE-CPR", "IE-CES", "IS", "IS-CPS", "ISF"):
+        if depto in ("IEI", "IE-CEP", "IE-CPR", "IE-CES", "IS", "IS-CSS", "ISF"):
             categ = self.catITE
             return (categ,'')
 
