@@ -67,8 +67,6 @@ class ComparaMNFDT(object):
             matr, nome, codfunc, descricao, depto, tipo = linha
 
             if rightdict.has_key(matr):
-
-
                 # codfunc
                 if (codfunc != rightdict[matr]['codfunc']) and (descricao.find("(I)") == -1):
                     qtddif += 1
@@ -110,6 +108,18 @@ class ComparaMNFDT(object):
                                                                             rightdict[matr]['descricao']))
                     #ccustosql = "update empregados set tipo = \"%s\" where matr = %s;" % (tipo, matr)
                     #rsql(ccustosql)
+            else:
+                if tipo <> 2:
+                    qtddif += 1
+                    rtxt(u"""---------
+Atenção: Matrícula %d nao existe na base -%s-:
+matr:    %d
+nome:    %s
+codfunc: %d (%s)
+depto:   %s
+tipo:    %d
+---------""" % (matr, self.rightname,
+                matr, nome, codfunc, descricao, depto, tipo))
 
         #mudsql.sort()
         #mudtxt.sort()
