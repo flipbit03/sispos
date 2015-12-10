@@ -130,7 +130,6 @@ class ComparaRpessiEmpregados(BaseSISPOS):
     findfiles = [ ('!RPESSI', ur'RELAÇÃO.*EFETIVO.*\.xlsx'),
                   ('EMPREG',  ur'empregados.txt')]
 
-
     def getrpessidata(self, rpessifname):
 
         # Abrir aba geral da planilha usando openPYXL
@@ -157,7 +156,6 @@ class ComparaRpessiEmpregados(BaseSISPOS):
                     # Se a linha atual contem None o fim dos nomes é na penúltima linha.
                     nameend = rowno-1
                     #print u"Encontrado fim dos nomes na linha %d" % (nameend+1,)
-
 
         employeelist = rows[namestart:nameend+1]
 
@@ -196,8 +194,6 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             retval.append(entry)
 
         return retval
-
-        #from code import interact; interact(local=locals())
 
 
     def process (self, f):
