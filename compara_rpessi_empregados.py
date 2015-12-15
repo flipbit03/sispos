@@ -89,12 +89,12 @@ class ComparaMNFDT(object):
                     rsql(deptosql)
 
                 # nome
-                if (levenshtein(nome.ljust(11), rightdict[matr]['nome'].ljust(11))) > 8:
-                    qtddif += 1
-                    rtxt("MATR: %s (%s):    NOME | de \"%s\" para \"%s\"" % (str(matr).ljust(5),
-                                                                            nome.ljust(20)[0:17],
-                                                                            rightdict[matr]['nome'].ljust(39),
-                                                                            nome.ljust(39)))
+                #if (levenshtein(nome.ljust(11), rightdict[matr]['nome'].ljust(11))) > 8:
+                #    qtddif += 1
+                #    rtxt("MATR: %s (%s):    NOME | de \"%s\" para \"%s\"" % (str(matr).ljust(5),
+                #                                                            nome.ljust(20)[0:17],
+                #                                                            rightdict[matr]['nome'].ljust(39),
+                #                                                            nome.ljust(39)))
 
                 # tipo
                 if (tipo != rightdict[matr]['tipo']):
