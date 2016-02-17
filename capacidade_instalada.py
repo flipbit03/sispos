@@ -19,7 +19,7 @@ class CapacidadeInstalada(BaseSISPOS):
         
         # Horas totais
         ipcuc_htot = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
-        ipscmi_htot = float(re.search(r'ipscmi.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
+        ipscmi_htot = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
         icq_htot = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HTOT']).group(1))
         fech_htot = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HTOT']).group(1)
         
@@ -27,7 +27,7 @@ class CapacidadeInstalada(BaseSISPOS):
 
         # Horas efetivas
         ipcuc_hefet = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
-        ipscmi_hefet = float(re.search(r'ipscmi.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
+        ipscmi_hefet = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
         icq_hefet = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
         fech_hefet = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HEFET']).group(1)
         
@@ -35,7 +35,7 @@ class CapacidadeInstalada(BaseSISPOS):
 
         # Horas disp
         ipcuc_hdisp = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
-        ipscmi_hdisp = float(re.search(r'ipscmi.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
+        ipscmi_hdisp = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
         icq_hdisp = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
         fech_hdisp = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HDISP']).group(1)
         

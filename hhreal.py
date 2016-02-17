@@ -311,7 +311,7 @@ background-color: red;
 
         # Departamentos ignorados
         if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2", 
-                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IP-CMI/MC", "IP-CMI", "IPS"):
+                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IP-CCM/MC", "IP-CCM", "IPS"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
@@ -355,12 +355,12 @@ background-color: red;
         # -------------
 
         # Tracagem
-        if depto in ("IP-CMI/T"):
+        if depto in ("IP-CCM/T"):
             categ = self.catTRAC
             return (categ,'')
 
         # Corte
-        if depto in ("IP-CMI/C"):
+        if depto in ("IP-CCM/C"):
             categ = self.catCORT
             return (categ,'')
 
@@ -370,12 +370,12 @@ background-color: red;
             return (categ,'')
 
         # Montagem
-        if depto in ("IP-CMI/M"):
+        if depto in ("IP-CCM/M"):
             categ = self.catMONT
             return (categ,'')
-        elif depto in ("IP-CMI") and (cargo.find('IND.') >= 0):
+        elif depto in ("IP-CCM") and (cargo.find('IND.') >= 0):
             categ = self.catMONT
-            motiv = "Regra especial: Tecnico Industrial no IPF"
+            motiv = "Regra especial: Tecnico Industrial no IP-CCM"
             return (categ,motiv)
 
         # Soldagem
@@ -389,7 +389,7 @@ background-color: red;
             return (categ,'')
 
         # Jato/Pintura
-        if depto in ("IP-CMI/JP"):
+        if depto in ("IP-CCM/JP"):
             categ = self.catJATO
             return (categ,'')
 
