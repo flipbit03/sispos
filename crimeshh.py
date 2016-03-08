@@ -43,8 +43,8 @@ class CrimesHH(BaseSISPOS):
     findfiles = ( ("CRIMESHH","CRIMESHH"),
                   ("#MES","Mes (FORMATO: MM)"),
                   ("#ANO","Data Final (FORMATO: AAAA)"),
-                  ("#dias1", "Dias Tipo=1 (Sabado ou Dias emendados, FORMATO: DD/MM/AAAA[,...])"),
-                  ("#dias2", "Dias Tipo=2 (Domingo ou Feriados)")
+                  ("##dias1", "Dias Tipo=1 (Sabado ou Dias emendados, FORMATO: DD/MM/AAAA[,...])"),
+                  ("##dias2", "Dias Tipo=2 (Domingo ou Feriados)")
                   )
                  
     def splithh(self, arq):
@@ -221,8 +221,8 @@ class CrimesHH(BaseSISPOS):
         arm = cria_bancodedados(f['CRIMESHH'])
 
         # Cria dias_1 e dias_2
-        dias_1 = [i.strip() for i in f['#dias1'].split(',')]
-        dias_2 = [i.strip() for i in f['#dias2'].split(',')]
+        dias_1 = [i.strip() for i in f['##dias1'].split(',')]
+        dias_2 = [i.strip() for i in f['##dias2'].split(',')]
 
         # Processamento
         for _matr in arm.keys():
