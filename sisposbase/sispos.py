@@ -32,7 +32,7 @@ class BaseSISPOS:
         
         if self.findfiles:
             # Arquivos
-            files = [b for b in self.findfiles if not b[0][0] == '#']
+            files = [_f for _f in self.findfiles if not _f[0][0] == '#']
             print "Precisamos de %d arquivo(s)...\n" % (len(files))
             for entry in files:
                 fname, freg = entry
@@ -45,13 +45,16 @@ class BaseSISPOS:
                 print ""
 
             # Perguntas
-            questions = [b for b in self.findfiles if b[0][0] == '#']
+            questions = [_q for _q in self.findfiles if _q[0][0] == '#']
             print "Precisamos fazer %d pergunta(s)...\n" % (len(questions))
             for entry in questions:
                 fname, fquestionprompt = entry
                 outdata = raw_input(fquestionprompt+" ? ")
                 if outdata:
                     self.inputfiles[fname] = outdata
+                elif fname[1] == "#":
+                    print "Pergunta opcional, deixada em branco [ok]."
+                    self.inputfiles[fname] = ''
                 print ""
 
             # Garantir que temos tudo que precisamos
