@@ -242,21 +242,21 @@ class CrimesHH(BaseSISPOS):
                         elif _data in dias_2:
                             feriado = "Feriado 100%"
 
-                        o1.write("[%s] [%s] [%s] %s\r\n" % (_matr, _data, wkdays[weekday], feriado))
-                        o1.write("%s%s%s\r\n" % ('turno'.ljust(7), 'htipo'.ljust(7),'hora'.ljust(7)))
+                        o1.write("[%s] [%s] [%s] %s\n" % (_matr, _data, wkdays[weekday], feriado))
+                        o1.write("%s%s%s\n" % ('turno'.ljust(7), 'htipo'.ljust(7),'hora'.ljust(7)))
                         entrada = evento
-                        o1.write("%s%s%s\r\n" % (str(entrada[0]).ljust(7), str(entrada[1]).ljust(7), str(entrada[2]).ljust(7)))
-                        o1.write('\r\n')
+                        o1.write("%s%s%s\n" % (str(entrada[0]).ljust(7), str(entrada[1]).ljust(7), str(entrada[2]).ljust(7)))
+                        o1.write('\n')
 
                         #raw_input("ERRO DETECTADO")
 
                 if julgalinhas(arm[_matr][_data]):
-                    o1.write("[%s] [%s] [%s]\r\n" % (_matr, _data, wkdays[weekday]))
-                    o1.write("%s%s%s\r\n" % ('turno'.ljust(7), 'htipo'.ljust(7),'hora'.ljust(7)))
+                    o1.write("[%s] [%s] [%s]\n" % (_matr, _data, wkdays[weekday]))
+                    o1.write("%s%s%s\n" % ('turno'.ljust(7), 'htipo'.ljust(7),'hora'.ljust(7)))
                     for entrada in arm[_matr][_data]:
-                        o1.write("%s%s%s\r\n" %
+                        o1.write("%s%s%s\n" %
                                  (str(entrada[0]).ljust(7), str(entrada[1]).ljust(7), str(entrada[2]).ljust(7)))
-                    o1.write('\r\n')
+                    o1.write('\n')
 
 
 a = CrimesHH()
