@@ -17,19 +17,19 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
         
         # Horas efetivas
         ipcuc_hefet = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
-        ipscmi_hefet = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
+        ipsccm_hefet = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
         icq_hefet = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
         fech_hefet = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HEFET']).group(1)
 
-        total_hefet = icq_hefet+ipcuc_hefet+ipscmi_hefet
+        total_hefet = icq_hefet+ipcuc_hefet+ipsccm_hefet
 
         # Horas disp
         ipcuc_hdisp = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
-        ipscmi_hdisp = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
+        ipsccm_hdisp = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
         icq_hdisp = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
         fech_hdisp = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HDISP']).group(1)
 
-        total_hdisp = icq_hdisp+ipcuc_hdisp+ipscmi_hdisp
+        total_hdisp = icq_hdisp+ipcuc_hdisp+ipsccm_hdisp
 
         o1 = self.getoutputfile(append='%s-%s' % (f['#MES'], f['#ANO']))
 
@@ -41,7 +41,7 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
         o1.write("HORAS DISPONIVEIS:\n")
         o1.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hdisp))
         o1.write("\tTotais:\n")
-        o1.write("\tIPS + IP-CMI\t%.2f\n" % (ipscmi_hdisp))
+        o1.write("\tIPS + IP-CCM\t%.2f\n" % (ipsccm_hdisp))
         o1.write("\tIPCUC\t\t%.2f\n" % (ipcuc_hdisp))
         o1.write("\tIQ\t\t%.2f\n\n" % (icq_hdisp))
         o1.write("\tTOTAL:\t\t%.2f\n\n\n" % (total_hdisp))
@@ -49,7 +49,7 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
         o1.write("HORAS EFETIVAS:\n")
         o1.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hefet))
         o1.write("\tTotais:\n")
-        o1.write("\tIPS + IP-CMI\t%.2f\n" % (ipscmi_hefet))
+        o1.write("\tIPS + IP-CCM\t%.2f\n" % (ipsccm_hefet))
         o1.write("\tIPCUC\t\t%.2f\n" % (ipcuc_hefet))
         o1.write("\tIQ\t\t%.2f\n\n" % (icq_hefet))
         o1.write("\tTOTAL:\t\t%.2f\n\n\n" % (total_hefet))
