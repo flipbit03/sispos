@@ -29,19 +29,25 @@ def levenshtein(s, t):
     return v1[len(t)]
 
 class ComparaMNFDT(object):
-    def __init__(self, left, leftname, right, rightname):
+    TIPO_MO_DIRETA = '0'
+    TIPO_MO_INDIRETA = '1'
+    TIPO_MO_NAOAPROP = '2'
+
+    SITUACAO_NCPDEMITIDO = '10'
+
+    def __init__(self, rpessi, rpessiname, empregados, empregadosname):
 
         # LEFT : DESTINO (resultado final)
-        self.left = left
-        self.leftname = leftname
+        self.rpessi_data = rpessi
+        self.rpessi_name = rpessiname
 
         # RIGHT: Origem (dados iniciais)
-        self.right = right
-        self.rightname = rightname
+        self.empreg_data = empregados
+        self.empreg_name = empregadosname
 
     def compara(self):
 
-        rightdict = {}
+        empregdict = self.empreg_data
 
         mudsql = []
         rsql = lambda x: mudsql.append(unicode(x))
@@ -49,86 +55,75 @@ class ComparaMNFDT(object):
         mudtxt = []
         rtxt = lambda x: mudtxt.append(unicode(x))
 
-        bannermsg = "000 Transformando a partir de \"%s\" para \"%s\"." % (self.rightname, self.leftname)
+        bannermsg = "000 Transformando a partir de \"%s\" para \"%s\"." % (self.empreg_name, self.rpessi_name)
         rtxt(bannermsg)
 
-        for linha in self.right:
-            matr, nome, codfunc, descricao, depto, tipo = linha
-
-            rightdict[matr] = {}
-            rightdict[matr]['nome'] = nome
-            rightdict[matr]['codfunc'] = codfunc
-            rightdict[matr]['descricao'] = descricao
-            rightdict[matr]['depto'] = depto
-            rightdict[matr]['tipo'] = tipo
-
         qtddif = 0
-        for linha in self.left:
+        for linha in self.rpessi_data:
             matr, nome, codfunc, descricao, depto, tipo = linha
 
-            if rightdict.has_key(matr):
+            muds = []
+
+            if empregdict.has_key(matr):
+
                 # codfunc
-                if (codfunc != rightdict[matr]['codfunc']) and (descricao.find("(I)") == -1):
-                    qtddif += 1
-                    rtxt("MATR: %s (%s): CODFUNC | de %s(%s) para %s(%s)" % (str(matr).ljust(5),
-                                                                            nome.ljust(20)[0:17],
-                                                                            rightdict[matr]['codfunc'],
-                                                                            rightdict[matr]['descricao'],
-                                                                            codfunc, descricao))
+                if (codfunc != empregdict[matr]['codfunc']) and (descricao.find("(I)") == -1):
+                    muds.append("  CODFUNC | de %s(%s) para %s(%s)" % (empregdict[matr]['codfunc'],
+                                                                empregdict[matr]['descricao'],
+                                                                codfunc,
+                                                                descricao))
                     codfuncsql = "update empregados set codfunc = \"%s\" where matr = %s;" % (codfunc, matr)
                     rsql(codfuncsql)
 
                 # departamento
-                if (depto != rightdict[matr]['depto']):
-                    qtddif += 1
-                    rtxt("MATR: %s (%s):   DEPTO | de \"%s\" para \"%s\"" % (str(matr).ljust(5),
-                                                                            nome.ljust(20)[0:17],
-                                                                            rightdict[matr]['depto'],
-                                                                            depto))
+                if (depto != empregdict[matr]['depto']):
+                    muds.append("  DEPTO | de \"%s\" para \"%s\"" % (empregdict[matr]['depto'],
+                                                              depto))
                     deptosql = "update empregados set depto = \"%s\" where matr = %s;" % (depto, matr)
                     rsql(deptosql)
 
-                # nome
-                #if (levenshtein(nome.ljust(11), rightdict[matr]['nome'].ljust(11))) > 8:
-                #    qtddif += 1
-                #    rtxt("MATR: %s (%s):    NOME | de \"%s\" para \"%s\"" % (str(matr).ljust(5),
-                #                                                            nome.ljust(20)[0:17],
-                #                                                            rightdict[matr]['nome'].ljust(39),
-                #                                                            nome.ljust(39)))
-
                 # tipo
-                if (tipo != rightdict[matr]['tipo']):
-                    qtddif += 1
-                    rtxt("MATR: %s (%s):    TIPO | de \"%s\" para \"%s\" [avaliar: %s %s/%s]" % (str(matr).ljust(5),
-                                                                            nome.ljust(20)[0:17],
-                                                                            rightdict[matr]['tipo'],
-                                                                            tipo,
-                                                                            rightdict[matr]['depto'],
-                                                                            descricao,
-                                                                            rightdict[matr]['descricao']))
-                    #ccustosql = "update empregados set tipo = \"%s\" where matr = %s;" % (tipo, matr)
-                    #rsql(ccustosql)
-            else:
-                if tipo <> 2:
-                    qtddif += 1
-                    rtxt(u"""---------
-Atenção: Matrícula %d nao existe na base -%s-:
-matr:    %d
-nome:    %s
-codfunc: %d (%s)
-depto:   %s
-tipo:    %d
----------""" % (matr, self.rightname,
+                if (tipo != empregdict[matr]['tipo']):
+                    muds.append("  TIPO | de \"%s\" para \"%s\" [avaliar: %s %s/%s]" % (empregdict[matr]['tipo'],
+                                                                                        tipo,
+                                                                                        empregdict[matr]['depto'],
+                                                                                        descricao,
+                                                                                        empregdict[matr]['descricao']))
+
+                # situacao = demitido
+                if empregdict[matr]['situacao'] in (self.SITUACAO_NCPDEMITIDO,):
+                    muds.append(u"""  ---------
+    Atenção: matr %s consta como DEMITIDO na base -%s-:
+    matr: %s / nome: %s
+    codfunc: %s (%s)
+    depto: %s / tipo: %s
+  ---------""" % (matr, self.empreg_name,
                 matr, nome, codfunc, descricao, depto, tipo))
 
-        #mudsql.sort()
-        #mudtxt.sort()
+            else:
+                if tipo <> self.TIPO_MO_NAOAPROP:
+                    muds.append(u"""  ---------
+    Atenção: matr %s nao existe na base -%s-:
+    matr: %s / nome: %s
+    codfunc: %s (%s)
+    depto: %s / tipo: %s
+  ---------""" % (matr, self.empreg_name,
+                matr, nome, codfunc, descricao, depto, tipo))
+
+            if muds:
+                rtxt("\nMATR: %s (%s):" % (str(matr).ljust(5),
+                                           nome.ljust(20)[0:17]))
+
+                qtddif += len(muds)
+
+                for mud in muds:
+                    rtxt(mud)
 
         return [mudtxt, mudsql, qtddif]
 
 class ComparaRpessiEmpregados(BaseSISPOS):
     findfiles = [ ('!RPESSI', ur'RELAÇÃO.*EFETIVO.*\.xlsx'),
-                  ('EMPREG',  ur'empregados.txt')]
+                  ('EMPREG',  ur'emprega.*\.txt')]
 
     def getrpessidata(self, rpessifname):
 
@@ -162,12 +157,12 @@ class ComparaRpessiEmpregados(BaseSISPOS):
         retval = []
         for employee in employeelist:
             #[3567, u'LIBERAL ENIO ZANELATTO', u'I', 29, '=CONCATENATE(C2," ",G2)', None, u'DIRETOR', None, 2, 1, None, None, None, None, None, None]
-            matr = employee[0]
-            nome = employee[1]
-            depto = employee[2]
-            codfunc = employee[3]
-            prof = employee[6]
-            tipo = employee[8]
+            matr = str(employee[0])
+            nome = unicode(employee[1])
+            depto = str(employee[2])
+            codfunc = str(employee[3])
+            prof = unicode(employee[6])
+            tipo = str(employee[8])
 
             # add data
             entry = [matr, nome, codfunc, prof, depto,  tipo]
@@ -180,27 +175,35 @@ class ComparaRpessiEmpregados(BaseSISPOS):
 
         ed_split = _ed.strip().split('\r\n')
 
-        retval = []
+        retval = {}
         for line in ed_split:
 
             line_s = line.split("|")
             line_s = [x.strip() for x in line_s]
 
             #matr, nome, codfunc, descricao, depto, tipo = linha
-            matr, nome, codfunc, descricao, depto, tipo, _ = line_s
+            matr, nome, codfunc, descricao, depto, tipo, situacao, _ = line_s
 
-            entry = (int(matr), nome, int(codfunc), descricao, depto, int(tipo))
-
-            retval.append(entry)
+            retval[matr] = {}
+            retval[matr]['nome'] = nome
+            retval[matr]['codfunc'] = codfunc
+            retval[matr]['descricao'] = descricao
+            retval[matr]['depto'] = depto
+            retval[matr]['tipo'] = tipo
+            retval[matr]['situacao'] = situacao
 
         return retval
 
 
     def process (self, f):
 
+        # Relacao de Pessoal do I (matriz)
         rpessidata = self.getrpessidata(f['!RPESSI'])
 
+        # Relacao de Empregados no Sistema (dicionario)
         empregdata = self.getempregdata(f['EMPREG'])
+
+
 
         #print "matr, nome, codfunc, descricao, depto, situacao = linha"
         #from code import interact; interact(local=locals())
