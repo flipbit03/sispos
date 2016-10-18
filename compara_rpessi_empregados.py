@@ -123,7 +123,7 @@ class ComparaMNFDT(object):
 
 class ComparaRpessiEmpregados(BaseSISPOS):
     findfiles = [ ('!RPESSI', ur'RELAÇÃO.*EFETIVO.*\.xlsx'),
-                  ('EMPREG',  ur'emprega.*\.txt')]
+                  ('EMPREG',  ur'empreg.*\.txt')]
 
     def getrpessidata(self, rpessifname):
 
