@@ -311,7 +311,7 @@ background-color: red;
 
         # Departamentos ignorados
         if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2", 
-                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IG-CLF", "IP-CCM/MC", "IP-CCM", "IPS"):
+                    "ITT", "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IP-CLF", "IP-CCM/MC", "IP-CCM", "IPS"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ,motiv)
@@ -399,7 +399,7 @@ background-color: red;
             return (categ,'')
 
         # "ITE" (Engenharia Geral)
-        if depto in ("IEI", "IE-CEP", "IE-CPR", "IE-CES", "IS", "IS-CSS", "ISF"):
+        if depto in ("IEI", "IE-CEP", "IE-CPR", "IE-CES", "IS", "IS-CSS", "IS-CPS", "ISF"):
             categ = self.catITE
             return (categ,'')
 
