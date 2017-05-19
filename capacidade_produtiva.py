@@ -16,7 +16,8 @@ class CapacidadeProdutiva(BaseSISPOS):
     
     findfiles = [ 
                 ## datas 
-                ("#DTFECH","Data de Fechamento do Mes (DD/MM/AAAA)"),
+                ("#DTINI","Data Inicial do Periodo (DD/MM/AAAA)"),
+                ("#DTFIM","Data Final do Periodo (DD/MM/AAAA)"),
                 ("#MES","Mes (FORMATO: MM)"),
                 ("#ANO","Ano (FORMATO: AAAA)"),
                 ("#DIU","Quantidade de Dias Uteis no Mes"),
@@ -70,13 +71,14 @@ class CapacidadeProdutiva(BaseSISPOS):
         o1.write("\n")
         o1.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o1.write("\tGERENCIA DE CONTROLE - ICC\n\n")
-        o1.write("INDICE DE CAPACIDADE PRODUTIVA DO I - REAL E PLANEJADO (ICPI_R e ICPI_P %s/%s)\n\n\n" % (f['#MES'], f['#ANO']))
+        o1.write("INDICE DE CAPACIDADE PRODUTIVA DO I - REAL E PLANEJADO\n(ICPI_R e ICPI_P do periodo %s/%s)\n\n" % (f['#MES'], f['#ANO']))
+        o1.write("Data Inicial: %s / Data Final: %s\n\n" % (f['#DTINI'], f['#DTFIM']))
 
-        o1.write("HORAS PRODUTIVAS DIRETAS REAIS      (hpd_r) - FECHAMENTO EM \"%s\":\n\n" % (f['#DTFECH']))
+        o1.write("HORAS PRODUTIVAS DIRETAS REAIS (hpd_r):\n\n")
         o1.write("\tTotal HH = %.2f\n\n" % (hpd_real))
         o1.write("\tTotal HH em pessoas = %d pessoas\n\n" % (hpd_real_pessoas))
         
-        o1.write("HORAS PRODUTIVAS DIRETAS PLANEJADAS (hpd_p) - FECHAMENTO EM \"%s\":\n\n" % (f['#DTFECH']))
+        o1.write("HORAS PRODUTIVAS DIRETAS PLANEJADAS (hpd_p):\n\n")
         o1.write("\tTotal HH = %.2f\n\n" % (hpd_plane))
         o1.write("\tTotal HH em pessoas = %d pessoas\n\n" % (hpd_plane_pessoas))
 
