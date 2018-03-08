@@ -79,31 +79,35 @@ class CrimesHH(BaseSISPOS):
 
             arm = {}
 
-            for _linha in arquivoexterno.strip().split('\n'):
+            # pula a primeira linha pois ela e o cabecalho, no sistema novo.
+            for _linha in arquivoexterno.strip().split('\n')[1:]:
 
-                matr, turno, data, htipo, hora, _ign = _linha.strip().split('|')
+                matr, turno, data, htipo, minutos, _ign = _linha.strip().split('|')
 
                 matr = int(matr)
                 turno = int(turno)
                 htipo = int(float(htipo))
-                hora = float(hora)
+                minutos = int(minutos)
+
+                # Convert data as obj
+                data_obj = datetime.datetime.strptime(data, r"%d/%m/%Y %H:%M:%S")
 
                 if not arm.has_key(matr):
                     arm[matr] = {}
 
-                if data not in arm[matr].keys():
-                    arm[matr][data] = []
+                if data_obj not in arm[matr].keys():
+                    arm[matr][data_obj] = []
 
-                arm[matr][data].append([turno, htipo, hora])
+                arm[matr][data_obj].append([turno, htipo, minutos])
 
             return arm
 
 
      # Lancamento
 
-        def julga(_data, evento):
-            dia, mes, ano = _data.strip().split(r'/')
-            dateobj = datetime.date(int(ano), int(mes), int(dia))
+        def julga(dateobj, evento):
+
+            #dateobj = datetime.date(int(ano), int(mes), int(dia))
             weekday = dateobj.weekday()
 
             erro = False
@@ -124,11 +128,12 @@ class CrimesHH(BaseSISPOS):
 
 
             ## Separa informacoes do evento
-            _turno, _htipo, _hora = evento
+            _turno, _htipo, _minutos = evento
 
 
-            ## Se TURNO=4 (24h) Regra especial.
-            if _turno == 4 and _htipo == 3 and _hora != 24:
+            ## Se TURNO=4 (21h) Regra especial.
+            # 1260 minutos = 21 horas
+            if _turno == 4 and _htipo == 3 and _minutos != 21*60:
                 return True
 
             if _turno == 4 and _htipo != 3:
@@ -138,27 +143,33 @@ class CrimesHH(BaseSISPOS):
             if tipohora in (0,):
 
                 if _htipo == 0 and _turno == 1:
-                    if _hora != 8:
+                    # 8h
+                    if _minutos != 8*60:
                         return True
 
                 if _htipo == 0 and _turno == 2:
-                    if _hora != 7.42:
+                    # 7h 37min
+                    if _minutos != (7*60+37):
                         return True
 
                 if _htipo == 0 and _turno == 3:
-                    if _hora != 6.08:
+                    # 7h 15min
+                    if _minutos != (7*60+15):
                         return True
 
                 if _htipo == 1 and _turno == 1:
-                    if _hora > 2:
+                    # 2 horas extras
+                    if _minutos > 2*60:
                         return True
 
                 if _htipo == 1 and _turno == 2:
-                    if _hora > 2:
+                    # 2 horas extras
+                    if _minutos > 2*60:
                         return True
 
                 if _htipo == 1 and _turno == 3:
-                    if _hora > 2:
+                    # 2 horas extras
+                    if _minutos > 2*60:
                         return True
 
                 if _htipo == 2:
@@ -170,13 +181,16 @@ class CrimesHH(BaseSISPOS):
                 if _htipo in (0, 2):
                     return True
 
-                if _htipo == 1 and _turno == 1 and _hora > 8:
+                # 8h
+                if _htipo == 1 and _turno == 1 and _minutos > 8*60:
                         return True
 
-                if _htipo == 1 and _turno == 2 and _hora > 7.42:
+                # 7h37m
+                if _htipo == 1 and _turno == 2 and _minutos > (7*60+37):
                         return True
 
-                if _htipo == 1 and _turno == 3 and _hora > 6.08:
+                # 7h15m
+                if _htipo == 1 and _turno == 3 and _minutos > (7*60+15):
                         return True
 
 
@@ -186,18 +200,17 @@ class CrimesHH(BaseSISPOS):
                 if _htipo in (0, 1):
                     return True
 
-                if _htipo == 2 and _turno == 1 and _hora > 8:
+                # 8h
+                if _htipo == 2 and _turno == 1 and _minutos > 8*60:
                         return True
 
-                if _htipo == 2 and _turno == 2 and _hora > 7.42:
+                # 7h37m
+                if _htipo == 2 and _turno == 2 and _minutos > (7*60+37):
                         return True
 
-                if _htipo == 2 and _turno == 3 and _hora > 6.08:
+                # 7h15m
+                if _htipo == 2 and _turno == 3 and _minutos > (7*60+15):
                         return True
-
-            #from code import interact; interact(local=locals())
-
-            #raw_input()
 
         def julgalinhas(levents):
 
@@ -210,10 +223,12 @@ class CrimesHH(BaseSISPOS):
 
             trabadm = False
 
-            adm8h = [1,0,8]
-            pedegalinha = [1,1,2]
+            adm8h = [1,0,8*60]
+            pedegalinha_adm2h = [1,1,2*60]
+            pedegalinha_adm1h = [1,1,1*60]
 
-            if (adm8h in leventscopy) and (pedegalinha in leventscopy):
+            if ((adm8h in leventscopy) and (pedegalinha_adm2h in leventscopy) or
+                (adm8h in leventscopy) and (pedegalinha_adm1h in leventscopy)):
                 return False
             else:
                 return True
@@ -221,16 +236,22 @@ class CrimesHH(BaseSISPOS):
         arm = cria_bancodedados(f['CRIMESHH'])
 
         # Cria dias_1 e dias_2
-        dias_1 = [i.strip() for i in f['##dias1'].split(',')]
-        dias_2 = [i.strip() for i in f['##dias2'].split(',')]
+        def faz_dias(datastr):
+            return datetime.datetime.strptime(datastr, "%d/%m/%Y")
+
+        dias_1 = [faz_dias(i) for i in f['##dias1'].split(',')]
+        dias_2 = [faz_dias(i) for i in f['##dias2'].split(',')]
 
         # Processamento
         for _matr in arm.keys():
             for _data in arm[_matr].keys():
                 # Dia da Semana
-                dia, mes, ano = _data.strip().split(r'/')
-                dateobj = datetime.date(int(ano), int(mes), int(dia))
-                weekday = dateobj.weekday()
+                #dia, mes, ano = _data.strip().split(r'/')
+
+                #dateobj = datetime.strptime(_data, r"%d/%m/%Y %H:%M:%S")
+                #dateobj = datetime.date(int(ano), int(mes), int(dia))
+
+                weekday = _data.weekday()
 
                 for evento in arm[_matr][_data]:
                     #print evento
@@ -242,20 +263,26 @@ class CrimesHH(BaseSISPOS):
                         elif _data in dias_2:
                             feriado = "Feriado 100%"
 
-                        o1.write("[%s] [%s] [%s] %s\n" % (_matr, _data, wkdays[weekday], feriado))
+                        _datas = "{}/{}/{}".format(_data.day, _data.month, _data.year)
+                        o1.write("[%s] [%s] [%s] %s\n" % (_matr, _datas, wkdays[weekday], feriado))
                         o1.write("%s%s%s\n" % ('turno'.ljust(7), 'htipo'.ljust(7),'hora'.ljust(7)))
                         entrada = evento
-                        o1.write("%s%s%s\n" % (str(entrada[0]).ljust(7), str(entrada[1]).ljust(7), str(entrada[2]).ljust(7)))
+                        et, eht, emin = evento
+                        ehoras = "{0:02}:{1:02}".format(emin//60, emin%60)
+                        o1.write("%s%s%s (%s min)\n" % (str(et).ljust(7), str(eht).ljust(7), str(ehoras).ljust(7), emin))
                         o1.write('\n')
 
                         #raw_input("ERRO DETECTADO")
 
                 if julgalinhas(arm[_matr][_data]):
-                    o1.write("[%s] [%s] [%s]\n" % (_matr, _data, wkdays[weekday]))
+                    _datas = "{}/{}/{}".format(_data.day, _data.month, _data.year)
+                    o1.write("[%s] [%s] [%s]\n" % (_matr, _datas, wkdays[weekday]))
                     o1.write("%s%s%s\n" % ('turno'.ljust(7), 'htipo'.ljust(7),'hora'.ljust(7)))
                     for entrada in arm[_matr][_data]:
-                        o1.write("%s%s%s\n" %
-                                 (str(entrada[0]).ljust(7), str(entrada[1]).ljust(7), str(entrada[2]).ljust(7)))
+                        et, eht, emin = entrada
+                        ehoras = "{0:02}:{1:02}".format(emin // 60, emin % 60)
+                        o1.write(
+                            "%s%s%s (%s min)\n" % (str(et).ljust(7), str(eht).ljust(7), str(ehoras).ljust(7), emin))
                     o1.write('\n')
 
 
