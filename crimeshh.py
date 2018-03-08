@@ -6,41 +6,13 @@ from decimal import Decimal
 
 from sisposbase.sispos import BaseSISPOS
 
-
 import sys
 import copy
 import datetime
 
-# ####
-# #dias_1 = ()
-#
-# dias_1 = ("23/12/2015", "24/12/2015", "28/12/2015", "29/12/2015", "30/12/2015", "31/12/2015")
-# dias_2 = ("25/12/2015", "01/01/2016")
-#
-# #dias_2 = ()
-# ####
-#
-# d = None
-#
-# with open(sys.argv[1]) as f:
-#     d = f.readlines()
-#
-#
-#  arm = cria_bancodedados(d)
-#  # Julgamento
-#
-# wkdays = {}
-# wkdays[0] = "Segunda-Feira"
-# wkdays[1] = "Terca-Feira"
-# wkdays[2] = "Quarta-Feira"
-# wkdays[3] = "Quinta-Feira"
-# wkdays[4] = "Sexta-Feira"
-# wkdays[5] = "Sabado"
-# wkdays[6] = "Domingo"
-#
 
 class CrimesHH(BaseSISPOS):
-    findfiles = ( ("CRIMESHH","CRIMESHH"),
+    findfiles = ( ("CRIMES","CRIMESHH"),
                   ("#MES","Mes (FORMATO: MM)"),
                   ("#ANO","Data Final (FORMATO: AAAA)"),
                   ("##dias1", "Dias Tipo=1 (Sabado ou Dias emendados, FORMATO: DD/MM/AAAA[,...])"),
@@ -233,11 +205,14 @@ class CrimesHH(BaseSISPOS):
             else:
                 return True
 
-        arm = cria_bancodedados(f['CRIMESHH'])
+        arm = cria_bancodedados(f['CRIMES'])
 
         # Cria dias_1 e dias_2
         def faz_dias(datastr):
-            return datetime.datetime.strptime(datastr, "%d/%m/%Y")
+            try:
+                return datetime.datetime.strptime(datastr, "%d/%m/%Y")
+            except:
+                print "erro convertendo linha --> \"{}\"".format(datastr)
 
         dias_1 = [faz_dias(i) for i in f['##dias1'].split(',')]
         dias_2 = [faz_dias(i) for i in f['##dias2'].split(',')]
@@ -285,6 +260,6 @@ class CrimesHH(BaseSISPOS):
                             "%s%s%s (%s min)\n" % (str(et).ljust(7), str(eht).ljust(7), str(ehoras).ljust(7), emin))
                     o1.write('\n')
 
-
-a = CrimesHH()
-a.run()
+if __name__ == "__main__":
+    a = CrimesHH()
+    a.run()
