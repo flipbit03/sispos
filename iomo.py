@@ -14,20 +14,35 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
         # Strip newlines and carriage returns
         f['HEFET'] = re.sub(r'[\r\n]', ' ', f['HEFET'])
         f['HDISP'] = re.sub(r'[\r\n]', ' ', f['HDISP'])
-        
+
+        fe = f['HEFET']
+        fd = f['HDISP']
+
         # Horas efetivas
-        ipcuc_hefet = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
-        ipsccm_hefet = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
-        icq_hefet = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HEFET']).group(1))
-        fech_hefet = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HEFET']).group(1)
+        ipcuc_hefet = float(re.search(r'total_IPCUC_HEFET.+?([0-9]{1,9}\,[0-9]{2})', f['HEFET']).group(1)
+                            .replace(',','.'))
+
+        ipsccm_hefet = float(re.search(r'total_IPSIPCCM_HEFET.+?([0-9]{1,9}\,[0-9]{2})', f['HEFET']).group(1)
+                             .replace(',', '.'))
+
+        icq_hefet = float(re.search(r'total_IQ_HEFET.+?([0-9]{1,9}\,[0-9]{2})', f['HEFET']).group(1)
+                             .replace(',', '.'))
+
+        fech_hefet = re.search(r'IPCUC.+?(([0-9]{2}\/){2}[0-9]{4})', f['HEFET']).group(1)
 
         total_hefet = icq_hefet+ipcuc_hefet+ipsccm_hefet
 
         # Horas disp
-        ipcuc_hdisp = float(re.search(r'ipcuc.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
-        ipsccm_hdisp = float(re.search(r'ipsccm.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
-        icq_hdisp = float(re.search(r'iq.+?([0-9]{1,9}\.[0-9]{2})', f['HDISP']).group(1))
-        fech_hdisp = re.search(r'ipcuc.+?(([0-9]{2}\/){2}[0-9]{4})', f['HDISP']).group(1)
+        ipcuc_hdisp = float(re.search(r'total_IPCUC_HDISP.+?([0-9]{1,9}\,[0-9]{2})', f['HDISP']).group(1)
+                             .replace(',', '.'))
+
+        ipsccm_hdisp = float(re.search(r'total_IPSIPCCM_HDISP.+?([0-9]{1,9}\,[0-9]{2})', f['HDISP']).group(1)
+                             .replace(',', '.'))
+
+        icq_hdisp = float(re.search(r'total_IQ_HDISP.+?([0-9]{1,9}\,[0-9]{2})', f['HDISP']).group(1)
+                             .replace(',', '.'))
+
+        fech_hdisp = re.search(r'IPCUC.+?(([0-9]{2}\/){2}[0-9]{4})', f['HDISP']).group(1)
 
         total_hdisp = icq_hdisp+ipcuc_hdisp+ipsccm_hdisp
 
