@@ -209,13 +209,15 @@ class CrimesHH(BaseSISPOS):
 
         # Cria dias_1 e dias_2
         def faz_dias(datastr):
+            if not datastr.strip():
+                return None
             try:
                 return datetime.datetime.strptime(datastr, "%d/%m/%Y")
             except:
                 print "erro convertendo linha --> \"{}\"".format(datastr)
 
-        dias_1 = [faz_dias(i) for i in f['##dias1'].split(',')]
-        dias_2 = [faz_dias(i) for i in f['##dias2'].split(',')]
+        dias_1 = [faz_dias(i) for i in f['##dias1'].split(',') if f['##dias1']]
+        dias_2 = [faz_dias(i) for i in f['##dias2'].split(',') if f['##dias2']]
 
         # Processamento
         for _matr in arm.keys():
