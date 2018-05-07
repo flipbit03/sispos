@@ -54,7 +54,7 @@ class CrimesHH(BaseSISPOS):
             # pula a primeira linha pois ela e o cabecalho, no sistema novo.
             for _linha in arquivoexterno.strip().split('\n')[1:]:
 
-                matr, turno, data, htipo, minutos, _ign = _linha.strip().split('|')
+                matr, turno, data, htipo, _ign, minutos, _ign = _linha.strip().split('|')
 
                 matr = int(matr)
                 turno = int(turno)
@@ -62,7 +62,7 @@ class CrimesHH(BaseSISPOS):
                 minutos = int(minutos)
 
                 # Convert data as obj
-                data_obj = datetime.datetime.strptime(data, r"%d/%m/%Y %H:%M:%S")
+                data_obj = datetime.datetime.strptime(data, r"%d/%m/%y")
 
                 if not arm.has_key(matr):
                     arm[matr] = {}
