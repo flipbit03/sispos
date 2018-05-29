@@ -12,7 +12,7 @@ def d(d):
     digits = Decimal('.01')
     return d.quantize(digits)
 
-class HHReal(BaseSISPOS):
+class HM_POR_OS(BaseSISPOS):
     # ----------------------------------
     # Initalization parameters
     # ----------------------------------
@@ -66,24 +66,10 @@ background-color: red;
 }
 """
 
-    # Work categories:
-    catTRAC = "Traçagem"
-    catCORT = "Corte"
-    catCALA = "Calandra"
-    catMONT = "Montagem"
-    catSOLD = "Soldagem"
-    catTRAT = "Trat. Térmico"
-    catJATO = "Jato/Pintura"
-    catUSIF = "Usin./Ferram."
-    catITE = "ITE"
-    catTECM = "TEC.M.PRO"
-    catICQ = "ICQ"
-    catIGN = "NÃO ORÇADO"  # Ignored hours
-    catUNK = "DESCONHECIDO"  # Unknown hours because of missing rules, programmer should check these.
+    catIGN = "Ignorada"
 
-    # Work categories, ordered:
-    catsORD = [catTRAC, catCORT, catCALA, catMONT, catSOLD, catTRAT, catJATO, catUSIF,
-               catITE, catTECM, catICQ, catIGN, catUNK]
+    catUNK = "Desconhecido"
+
 
     # Hour types:
     hourTOTAL = 'total'
@@ -102,17 +88,17 @@ background-color: red;
     jdata2 = {}
 
     def processjdata(self, line):
-        # codped || descricao || depto || fa || atividade || tothora || <ignore>
+        # codped || matr_maquina || nome_maquina || fa || atividade || tothora || <ignore>
 
         # Get main variables
-        codped, descricao, depto, atividade, fa, tothora = line
+        codped, matr_maquina, nome_maquina, atividade, fa, tothora = line
 
         # ##############################################
         # Jdata #1 --> Generate main report data
         # ##############################################
 
         # Generate additional vars from main
-        cat, catmotiv = self.judgecat(descricao, depto)
+        cat, catmotiv = self.judgecat(matr_maquina, nome_maquina)
         wts = self.judgewts(fa, atividade)
 
         if not self.jdata.has_key(codped):
@@ -177,9 +163,9 @@ background-color: red;
         dados_os = self.jdata.get(os)
 
         if dados_os:
-            for categ in self.catsORD:
+            for matr_maquina in sorted(dados_os.keys()):
 
-                dados_categ = dados_os.get(categ)
+                dados_categ = dados_os.get(matr_maquina)
 
                 ht, h18, h80, h92 = ('', '', '', '')
                 if dados_categ:
@@ -199,7 +185,7 @@ background-color: red;
                     if isinstance(h92, Decimal):
                         h92 = '{}'.format(d(h92))
 
-                rv.append((categ, ht, h80, h18, h92))
+                rv.append((matr_maquina, ht, h80, h18, h92))
 
         return rv
 
@@ -210,8 +196,6 @@ background-color: red;
         data = self.generate_outcome_data(os)
 
         data.insert(1, ('---Categoria---', '||Horas totais||', '||Horas 80||', '||Horas 18||', '||Horas 92-97||'))
-
-        data.insert(10, ('Carpintaria', '¬', '¬', '¬', '¬'))
 
         for line in data:
             lines = [x.replace('.',',') for x in line]
@@ -269,146 +253,14 @@ background-color: red;
 
         return list(wts)
 
-    def judgecat(self, cargo, depto):
+    def judgecat(self, matr_maquina, nome_maquina):
 
-        categ = self.catUNK  # tracagem, corte, ....
+        categ = self.catUNK # tracagem, corte, ....
         motiv = 'Linha não entrou em nenhuma regra! Verificar...'  # motivo em caso de regra especial
 
-        # -------------
-        # -- Ignorar --
-        # -------------
+        if matr_maquina:
+            return (matr_maquina, nome_maquina)
 
-        # Apontador de Produção
-        if cargo.find("APONT. PRODUCAO") >= 0:
-            categ = self.catIGN
-            motiv = 'Cargo Ignorado: Tecnico de Planejamento'
-            return (categ, motiv)
-
-        # Técnico de Planejamento
-        if cargo.find("TEC.PLANEJAMENTO") >= 0:
-            categ = self.catIGN
-            motiv = 'Cargo Ignorado: Tecnico de Planejamento'
-            return (categ, motiv)
-
-        # Auxiliar Administrativo
-        if cargo.find("AUX.ADMINISTRAT") >= 0:
-            categ = self.catIGN
-            motiv = 'Cargo Ignorado: Auxiliar Administrativo'
-            return (categ, motiv)
-
-        # Arquivista Técnico
-        if cargo.find("ARQUIVI. TECNICO") >= 0:
-            categ = self.catIGN
-            motiv = 'Cargo Ignorado: Arquivista Tecnico'
-            return (categ, motiv)
-
-        # Supervisores e Mestres
-        if ((cargo.find("SUP") >= 0) or
-                (cargo.find("MEST") >= 0)):
-            categ = self.catIGN
-            motiv = 'Cargo Ignorado: Supervisor ou Mestre'
-            return (categ, motiv)
-
-        # Departamentos ignorados
-        if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2",
-                     "ITT", "ITT-APRENDIZES",
-                     "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IP-CLF", "IP-CCM/MC", "IP-CCM", "IPS"):
-            categ = self.catIGN
-            motiv = "Setor Ignorado: %s" % (depto)
-            return (categ, motiv)
-
-        # -------------------
-        # -- Setor + Cargo --
-        # -------------------
-
-        # IM - Considerar apenas TEC MECANICA --> ITE (Ignorar outras profissoes)
-        if depto in ("IM"):
-            if cargo in ("TEC. MECANICA"):
-                categ = self.catITE
-                return (categ, '')
-            else:
-                categ = self.catIGN
-                motiv = "IM Ignorado (Apenas TEC MEC --> ITE)"
-                return (categ, motiv)
-
-        # IMC - Considerar apenas TEC INDUSTRIAL --> TEC MET PROC (Ignorar outras profissoes)
-        if depto in ("IMC"):
-            if cargo in ("TEC. INDUSTRIAL"):
-                categ = self.catTECM
-                return (categ, '')
-            else:
-                categ = self.catIGN
-                motiv = "IMC Ignorado (Apenas TEC IND --> Tec Met Proc)"
-                return (categ, motiv)
-
-        # -----------
-        # -- CARGO --
-        # -----------
-
-        # TEC. M. PRO
-        if cargo in ("TEC.M.PRO"):
-            categ = self.catTECM
-            return (categ, '')
-
-        # -------------
-        # -- Setores --
-        # -------------
-
-        # Tracagem
-        if depto in ("IP-CCM/T"):
-            categ = self.catTRAC
-            return (categ, '')
-
-        # Corte
-        if depto in ("IP-CCM/C"):
-            categ = self.catCORT
-            return (categ, '')
-
-        # Calandra
-        if depto in ("IP-CUC/C"):
-            categ = self.catCALA
-            return (categ, '')
-
-        # Montagem
-        if depto in ("IP-CCM/M"):
-            categ = self.catMONT
-            return (categ, '')
-        elif depto in ("IP-CCM") and (cargo.find('IND.') >= 0):
-            categ = self.catMONT
-            motiv = "Regra especial: Tecnico Industrial no IP-CCM"
-            return (categ, motiv)
-
-        # Soldagem
-        if depto in ("IPS/S"):
-            categ = self.catSOLD
-            return (categ, '')
-
-        # Tratamento Termico
-        if depto in ("IPS/TT"):
-            categ = self.catTRAT
-            return (categ, '')
-
-        # Jato/Pintura
-        if depto in ("IP-CCM/JP"):
-            categ = self.catJATO
-            return (categ, '')
-
-        # Usinagem/Ferramentaria
-        if depto in ("IP-CUC/U", "IP-CUC/F"):
-            categ = self.catUSIF
-            return (categ, '')
-
-        # "ITE" (Engenharia Geral)
-        if depto in ("IE", "IEI", "IE-CEP", "IE-CPR", "IE-CES", "ID", "IDP", "IS-CPS", "IDF"):
-            categ = self.catITE
-            return (categ, '')
-
-        # IQ
-        if depto in ("IQ"):
-            categ = self.catICQ
-            return (categ, '')
-
-        # Else? DESCONHECIDO (Programmer should check it out)
         return (categ, motiv)
 
     @staticmethod
@@ -435,6 +287,7 @@ background-color: red;
         # ########
 
         # Get processed and treated main data
+        #fs[x] = ['2400000509 (4108-4)', '5114301', 'FRESADORA VERTICAL HELLER', '18', 'FA', Decimal('4.000000')]
         fs = self.convert_data_fields(f[self.__class__.__name__.upper()])
 
         # Get output file for HTML
@@ -442,7 +295,7 @@ background-color: red;
         # Get output file for CSV
         o2 = self.getoutputfile(ext='csv', append='%s-%s-excel' % (f['#MES'], f['#ANO']))
 
-        # Get output variable file for UNKNOWN profession x dept mappings.
+        # Get output variable file for UNKNOWN matr_maquina x dept mappings.
         unknownhours = []
 
         # init output html
@@ -462,19 +315,19 @@ background-color: red;
             o1.write('<table>\n')
             o1.write('<tr>\n')
             o1.write("""<th width="200">codped</th>\n
-                    <th width="200">cargo</th>\n
-                    <th width="80">depto</th>\n
+                    <th width="100">Máquina</th>\n
+                    <th style="min-width:50">Nome da Máquina</th>\n
                     <th width="100">fa-ativ</th>\n
                     <th width="50">horas</th>\n
                     <th width="150">outcome</th>\n""")
             o1.write('</tr>')
 
             # In this OS, get distinct PROFESSIONS
-            professions = list(set([x[1] for x in fs if x[0] == os]))
-            professions.sort()
-            for profession in professions:
-                # List and process hours for this profession
-                lines = [x for x in fs if x[0] == os and x[1] == profession]
+            matr_maquinas = list(set([x[1] for x in fs if x[0] == os]))
+            matr_maquinas.sort()
+            for matr_maquina in matr_maquinas:
+                # List and process hours for this matr_maquina
+                lines = [x for x in fs if x[0] == os and x[1] == matr_maquina]
 
                 for line in lines:
                     ## MAIN LOOP HERE!
@@ -483,11 +336,11 @@ background-color: red;
                     self.processjdata(line)
 
                     ## Split line
-                    codped, descricao, depto, atividade, fa, _tothora = line
-                    tothora = d(_tothora)
+                    codped, matr_maquina, nome_maquina, atividade, fa, tothora = line
+
 
                     ## Generate additional vars
-                    cat, catmotiv = self.judgecat(descricao, depto)
+                    cat, catmotiv = self.judgecat(matr_maquina, nome_maquina)
                     wts = self.judgewts(fa, atividade)
 
                     # Alter formatting from outcome (cat/catmotiv/wts)
@@ -501,7 +354,7 @@ background-color: red;
                         trclass = 'class="unknownhour"'
 
                         # Append unknown hours to list of unknown hours.
-                        unknownhours.append("DESCONHECIDO\t%s\t%s" % (depto, descricao))
+                        unknownhours.append("DESCONHECIDO\t%s\t%s" % (nome_maquina, matr_maquina))
 
                     else:
                         trclass = 'class="normalhour"'  # Normal hours
@@ -511,18 +364,18 @@ background-color: red;
                     # Write it out
                     o1.write('<tr %s %s>' % (trclass, trtitle))
                     o1.write('<td>%s</td>' % (codped))
-                    o1.write('<td>%s</td>' % (descricao))
-                    o1.write('<td>%s</td>' % (depto))
+                    o1.write('<td>%s</td>' % (matr_maquina))
+                    o1.write('<td>%s</td>' % (nome_maquina))
                     o1.write('<td %s align="center">%s %s</td>' % (tdtothora, fa, atividade))
                     o1.write('<td align="center">%s</td>' % (tothora))
                     o1.write('<td align="right">%s</td>' % (cat))
                     o1.write('</tr>')
 
-                # Total hours for this profession:
-                sumhp = sum([Decimal(x[5]) for x in fs if x[0] == os and x[1] == profession])
-                # print "\t total de HH de %s --> %.2f" % (profession, sumhp) #debug
+                # Total hours for this matr_maquina:
+                sumhp = sum([Decimal(x[5]) for x in fs if x[0] == os and x[1] == matr_maquina])
+                # print "\t total de HH de %s --> %.2f" % (matr_maquina, sumhp) #debug
                 o1.write('<tr class="totalcargo">')
-                o1.write('<td colspan="4" align="center">Total de HH de %s</td>' % (profession))
+                o1.write('<td colspan="4" align="center">Total de HH de %s</td>' % (matr_maquina))
                 o1.write('<td colspan="2">%.2f</td>' % (sumhp))
                 o1.write('</tr>')
                 o1.write('<tr>')
@@ -582,5 +435,5 @@ background-color: red;
 
 
 if __name__ == "__main__":
-    a = HHReal()
+    a = HM_POR_OS()
     r = a.run()

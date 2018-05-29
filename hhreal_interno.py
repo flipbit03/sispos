@@ -5,7 +5,7 @@ import re
 # derive this from HHReal instead of BaseSISPOS
 from hhreal import HHReal
 
-class HHRealInt(HHReal):
+class HHReal_Interno(HHReal):
     # ----------------------------------
     # Initalization parameters
     # ----------------------------------
@@ -16,5 +16,5 @@ class HHRealInt(HHReal):
     pass 
 
 if __name__ == "__main__":
-    a = HHRealInt()
+    a = HHReal_Interno()
     r = a.run()
