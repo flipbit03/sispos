@@ -312,7 +312,7 @@ background-color: red;
         # Departamentos ignorados
         if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2",
                      "ITT", "ITT-APRENDIZES",
-                     "IG-CPR", "IP-CUC", "IPM", "IG-AS", "IP-CLF", "IP-CCM/MC", "IP-CCM", "IPS"):
+                     "IG-CPR", "IPU", "IPM", "IG-AS", "IPL", "IPC/MC", "IPC", "IPS"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
             return (categ, motiv)
@@ -355,27 +355,27 @@ background-color: red;
         # -------------
 
         # Tracagem
-        if depto in ("IP-CCM/T"):
+        if depto in ("IPC/T"):
             categ = self.catTRAC
             return (categ, '')
 
         # Corte
-        if depto in ("IP-CCM/C"):
+        if depto in ("IPC/C"):
             categ = self.catCORT
             return (categ, '')
 
         # Calandra
-        if depto in ("IP-CUC/C"):
+        if depto in ("IPU/C"):
             categ = self.catCALA
             return (categ, '')
 
         # Montagem
-        if depto in ("IP-CCM/M"):
+        if depto in ("IPC/M"):
             categ = self.catMONT
             return (categ, '')
-        elif depto in ("IP-CCM") and (cargo.find('IND.') >= 0):
+        elif depto in ("IPC") and (cargo.find('IND.') >= 0):
             categ = self.catMONT
-            motiv = "Regra especial: Tecnico Industrial no IP-CCM"
+            motiv = "Regra especial: Tecnico Industrial no IPC"
             return (categ, motiv)
 
         # Soldagem
@@ -389,17 +389,17 @@ background-color: red;
             return (categ, '')
 
         # Jato/Pintura
-        if depto in ("IP-CCM/JP"):
+        if depto in ("IPC/JP"):
             categ = self.catJATO
             return (categ, '')
 
         # Usinagem/Ferramentaria
-        if depto in ("IP-CUC/U", "IP-CUC/F"):
+        if depto in ("IPU/U", "IPU/F"):
             categ = self.catUSIF
             return (categ, '')
 
         # "ITE" (Engenharia Geral)
-        if depto in ("IE", "IEI", "IE-CEP", "IE-CPR", "IE-CES", "ID", "IDP", "IS-CPS", "IDF"):
+        if depto in ("IE", "IEI", "IEP", "IEE", "IES", "ID", "IDP", "IS-CPS", "IDF"):
             categ = self.catITE
             return (categ, '')
 
