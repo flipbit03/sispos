@@ -3,6 +3,8 @@
 
 import os
 import re
+import shutil
+import tempfile
 import warnings
 import locale
 from openpyxl import load_workbook
@@ -10,11 +12,36 @@ from sisposbase.sispos import BaseSISPOS
 
 warnings.filterwarnings('ignore')
 
+sqlcode = """
+SELECT 
+	e.matricula, e.nome, 
+	f.codigo codfunc, f.nome profissao, 
+	d.sigla depto, 
+	t.codigo tipo_MO, 
+	s.codigo Situa
+from 
+	Empregado e, 
+	Departamento d, 
+	Funcao f, 
+	TipoMaoObra t, 
+	Situacao s
+where 
+	e.fkDepartamento = d.pkDepartamento and
+	e.fkFuncao = f.pkFuncao and
+	e.fkTipoMaoObra = t.pkTipoMaoObra and
+	e.fkSituacao = s.pkSituacao
+"""
+
+sqlrunner = os.path.join(os.getcwdu(), "SingleSQLExecutor.exe")
+
 def levenshtein(s, t):
     ''' From Wikipedia article; Iterative with two matrix rows. '''
-    if s == t: return 0
-    elif len(s) == 0: return len(t)
-    elif len(t) == 0: return len(s)
+    if s == t:
+        return 0
+    elif len(s) == 0:
+        return len(t)
+    elif len(t) == 0:
+        return len(s)
     v0 = [None] * (len(t) + 1)
     v1 = [None] * (len(t) + 1)
     for i in range(len(v0)):
@@ -28,6 +55,7 @@ def levenshtein(s, t):
             v0[j] = v1[j]
 
     return v1[len(t)]
+
 
 class ComparaMNFDT(object):
     TIPO_MO_DIRETA = '0'
@@ -70,16 +98,16 @@ class ComparaMNFDT(object):
                 # codfunc
                 if (codfunc != empregdict[matr]['codfunc']) and (descricao.find("(I)") == -1):
                     muds.append("  CODFUNC | de %s(%s) para %s(%s)" % (empregdict[matr]['codfunc'],
-                                                                empregdict[matr]['descricao'],
-                                                                codfunc,
-                                                                descricao))
+                                                                       empregdict[matr]['descricao'],
+                                                                       codfunc,
+                                                                       descricao))
                     codfuncsql = "update empregados set codfunc = \"%s\" where matr = %s;" % (codfunc, matr)
                     rsql(codfuncsql)
 
                 # departamento
                 if (depto != empregdict[matr]['depto']):
                     muds.append("  DEPTO | de \"%s\" para \"%s\"" % (empregdict[matr]['depto'],
-                                                              depto))
+                                                                     depto))
                     deptosql = "update empregados set depto = \"%s\" where matr = %s;" % (depto, matr)
                     rsql(deptosql)
 
@@ -99,7 +127,7 @@ class ComparaMNFDT(object):
     codfunc: %s (%s)
     depto: %s / tipo: %s
   ---------""" % (matr, self.empreg_name,
-                matr, nome, codfunc, descricao, depto, tipo))
+                  matr, nome, codfunc, descricao, depto, tipo))
 
             else:
                 if tipo <> self.TIPO_MO_NAOAPROP:
@@ -109,7 +137,7 @@ class ComparaMNFDT(object):
     codfunc: %s (%s)
     depto: %s / tipo: %s
   ---------""" % (matr, self.empreg_name,
-                matr, nome, codfunc, descricao, depto, tipo))
+                  matr, nome, codfunc, descricao, depto, tipo))
 
             if muds:
                 rtxt("\nMATR: %s (%s):" % (str(matr).ljust(5),
@@ -122,9 +150,9 @@ class ComparaMNFDT(object):
 
         return [mudtxt, mudsql, qtddif]
 
+
 class ComparaRpessiEmpregados(BaseSISPOS):
-    findfiles = [ ('!RPESSI', ur'RELAÇÃO.*EFETIVO.*\.xlsx'),
-                  ('EMPREG',  ur'empreg.*\.txt')]
+    findfiles = [('!RPESSI', ur'RELAÇÃO.*EFETIVO.*\.xlsx'),]
 
     def getrpessidata(self, rpessifname):
 
@@ -145,19 +173,19 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             if namestart == -1:
                 if nome == "Nome" and setor == "Setor":
                     # Se a linha atual contem "Nome" e " Setor" o inicio dos nomes é na próxima linha.
-                    namestart = rowno+1
-                    #print u"Encontrado início dos nomes na linha %d" % (namestart+1,)
+                    namestart = rowno + 1
+                    # print u"Encontrado início dos nomes na linha %d" % (namestart+1,)
             if nameend == -1:
                 if nome == None and setor == None:
                     # Se a linha atual contem None o fim dos nomes é na penúltima linha.
-                    nameend = rowno-1
-                    #print u"Encontrado fim dos nomes na linha %d" % (nameend+1,)
+                    nameend = rowno - 1
+                    # print u"Encontrado fim dos nomes na linha %d" % (nameend+1,)
 
-        employeelist = rows[namestart:nameend+1]
+        employeelist = rows[namestart:nameend + 1]
 
         retval = []
         for employee in employeelist:
-            #[3567, u'LIBERAL ENIO ZANELATTO', u'I', 29, '=CONCATENATE(C2," ",G2)', None, u'DIRETOR', None, 2, 1, None, None, None, None, None, None]
+            # [3567, u'LIBERAL ENIO ZANELATTO', u'I', 29, '=CONCATENATE(C2," ",G2)', None, u'DIRETOR', None, 2, 1, None, None, None, None, None, None]
             matr = str(employee[0])
             nome = unicode(employee[1])
             depto = str(employee[2])
@@ -166,23 +194,36 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             tipo = str(employee[8])
 
             # add data
-            entry = [matr, nome, codfunc, prof, depto,  tipo]
+            entry = [matr, nome, codfunc, prof, depto, tipo]
 
             retval.append(entry)
 
         return retval
 
-    def getempregdata(self, _ed):
+    def getempregdata(self):
+
+        tmpdir = tempfile.mkdtemp()
+
+        sqlfp = os.path.join(tmpdir, "sqlcode.sql")
+        with open(sqlfp, 'wb') as sqlf:
+            sqlf.write(sqlcode)
+
+        outf = os.path.join(tmpdir, "out.txt")
+
+        # run it
+        os.system("{} {} {}".format(sqlrunner, sqlfp, outf))
+
+        with open(outf, 'rb') as data:
+            _ed = data.read()
 
         ed_split = _ed.strip().split('\r\n')
 
         retval = {}
-        for line in ed_split:
-
+        for line in ed_split[1:]:
             line_s = line.split("|")
             line_s = [x.strip() for x in line_s]
 
-            #matr, nome, codfunc, descricao, depto, tipo = linha
+            # matr, nome, codfunc, descricao, depto, tipo = linha
             matr, nome, codfunc, descricao, depto, tipo, situacao, _ = line_s
 
             retval[matr] = {}
@@ -193,21 +234,20 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             retval[matr]['tipo'] = tipo
             retval[matr]['situacao'] = situacao
 
+        shutil.rmtree(tmpdir)
+
         return retval
 
-
-    def process (self, f):
+    def process(self, f):
 
         # Relacao de Pessoal do I (matriz)
         rpessidata = self.getrpessidata(f['!RPESSI'])
 
         # Relacao de Empregados no Sistema (dicionario)
-        empregdata = self.getempregdata(f['EMPREG'])
+        empregdata = self.getempregdata()
 
-
-
-        #print "matr, nome, codfunc, descricao, depto, situacao = linha"
-        #from code import interact; interact(local=locals())
+        # print "matr, nome, codfunc, descricao, depto, situacao = linha"
+        # from code import interact; interact(local=locals())
 
         # Ativa o comparador
         comp = ComparaMNFDT(rpessidata, "RPESSI", empregdata, "TABELA EMPREGADOS", )
@@ -219,7 +259,7 @@ class ComparaRpessiEmpregados(BaseSISPOS):
         print u"%d diferença(s) detectadas..." % (qtdmud)
         print u"----------------------------------------"
 
-        #from code import interact; interact(local=locals())
+        # from code import interact; interact(local=locals())
 
         if qtdmud:
             # Salvando em texto as mudanças textuais
@@ -232,6 +272,6 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             sqldata = u"\n".join(mudsql)
             sqlfile.write(sqldata.encode(locale.getpreferredencoding()))
 
-
-a = ComparaRpessiEmpregados()
-a.run()
+if __name__ == "__main__":
+    a = ComparaRpessiEmpregados()
+    a.run()
