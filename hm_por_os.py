@@ -282,6 +282,19 @@ background-color: red;
         filedatas = [processline(x) for x in filedata[1:]]
         return filedatas
 
+    def write_output_html_header(self, o, mes, ano):
+        assert isinstance(o, file)
+
+        o.write('<!DOCTYPE html>\n')
+        o.write('<html>\n')
+        o.write(
+            '<head><title>%s %s/%s - SISPOS</title><style>%s</style>\n' % (self.__class__.__name__.upper(),
+                                                                           mes,
+                                                                           ano, self.inlinecss))
+
+        o.write('<body>\n')
+        o.write('<h1>%s %s/%s</h1>\n' % (self.__class__.__name__.upper(), mes, ano))
+
     def process(self, f):
         # ########
         # Jdata1
@@ -293,6 +306,10 @@ background-color: red;
 
         # Get output file for HTML
         o1 = self.getoutputfile(ext='html', append='%s-%s' % (f['#MES'], f['#ANO']))
+
+        # Get output file for HTML - print version
+        o1p = self.getoutputfile(ext='html', append='%s-%s-print' % (f['#MES'], f['#ANO']))
+
         # Get output file for CSV
         o2 = self.getoutputfile(ext='csv', append='%s-%s-excel' % (f['#MES'], f['#ANO']))
 
@@ -300,13 +317,8 @@ background-color: red;
         unknownhours = []
 
         # init output html
-        o1.write('<!DOCTYPE html>\n')
-        o1.write('<html>\n')
-        o1.write(
-            '<head><title>%s - SISPOS</title><style>%s</style>\n' % (self.__class__.__name__.upper(), self.inlinecss))
-
-        o1.write('<body>\n')
-        o1.write('<h1>%s</h1>\n' % (self.__class__.__name__.upper()))
+        self.write_output_html_header(o1, f['#MES'], f['#ANO'])
+        self.write_output_html_header(o1p, f['#MES'], f['#ANO'])
 
         # Get OS list
         oses = list(set([x[0] for x in fs]))
@@ -403,11 +415,14 @@ background-color: red;
 
             # Generate outcome chart (Result)
             o1.write(self.generateoutcomechart(os))
+            o1p.write(self.generateoutcomechart(os))
 
             o1.write('<hr />')
+            o1p.write('<br /><br />')
 
         # Close HTML document
         o1.write('</body></html>')
+        o1p.write('</body></html>')
 
         # ########
         # Jdata2
