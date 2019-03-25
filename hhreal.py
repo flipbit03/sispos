@@ -1,3 +1,4 @@
+#!python2
 # -*- coding: cp1252 -*-
 import os
 import re
@@ -311,7 +312,7 @@ background-color: red;
 
         # Departamentos ignorados
         if depto in ("IMP", "IC", "ICC", "ICP", "IG", "IG-1", "IG-2", "IG-3", "IG-CPR-2",
-                     "ITT", "ITT-APRENDIZES",
+                     "IT", "IT-APRENDIZES",
                      "IG-CPR", "IPU", "IPM", "IG-AS", "IPL", "IPC/MC", "IPC", "IPS"):
             categ = self.catIGN
             motiv = "Setor Ignorado: %s" % (depto)
