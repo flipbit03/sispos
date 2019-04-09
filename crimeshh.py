@@ -1,4 +1,4 @@
-#!python2
+#!python3
 # -*- coding: cp1252 -*-
 import os
 import re
@@ -53,9 +53,9 @@ class CrimesHH(BaseSISPOS):
             arm = {}
 
             # pula a primeira linha pois ela e o cabecalho, no sistema novo.
-            for _linha in arquivoexterno.strip().split('\n')[1:]:
+            for _linha in [x.strip().split('|') for x in arquivoexterno.strip().decode().split('\n')[1:]]:
 
-                matr, turno, data, htipo, _ign, minutos, _ign = _linha.strip().split('|')
+                matr, turno, data, htipo, _ign, minutos, _ign = _linha
 
                 matr = int(matr)
                 turno = int(turno)
@@ -65,7 +65,7 @@ class CrimesHH(BaseSISPOS):
                 # Convert data as obj
                 data_obj = datetime.datetime.strptime(data, r"%d/%m/%y")
 
-                if not arm.has_key(matr):
+                if matr not in arm:
                     arm[matr] = {}
 
                 if data_obj not in arm[matr].keys():
@@ -215,7 +215,7 @@ class CrimesHH(BaseSISPOS):
             try:
                 return datetime.datetime.strptime(datastr, "%d/%m/%Y")
             except:
-                print "erro convertendo linha --> \"{}\"".format(datastr)
+                print("erro convertendo linha --> \"{}\"".format(datastr))
 
         dias_1 = [faz_dias(i) for i in f['##dias1'].split(',') if f['##dias1']]
         dias_2 = [faz_dias(i) for i in f['##dias2'].split(',') if f['##dias2']]

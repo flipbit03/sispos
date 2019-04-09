@@ -1,9 +1,10 @@
+#!python3
 # -*- coding: cp1252 -*-
 import os
-from filefinder import findfile, findfilel
+from .filefinder import findfile, findfilel
 
-INPUTPATH = os.path.join(os.getcwdu(), "inputs")
-OUTPUTPATH = os.path.join(os.getcwdu(), "outputs")
+INPUTPATH = os.path.join(os.getcwd(), "inputs")
+OUTPUTPATH = os.path.join(os.getcwd(), "outputs")
 
 class BaseSISPOS:
     #FILL THIS IN
@@ -22,10 +23,10 @@ class BaseSISPOS:
         pass #self.findfiles.append ( (xx,xx) )...
     
     def __init__(self):
-        print "-----------------------------"
-        print "SISPOS - Modulo %s" % (self.__class__.__name__)
-        print "-----------------------------"
-        print ""
+        print("-----------------------------")
+        print("SISPOS - Modulo %s" % (self.__class__.__name__))
+        print("-----------------------------")
+        print("")
 
         # Call this function to populate dynamically self.findfiles
         self.dynfindfiles()
@@ -33,7 +34,7 @@ class BaseSISPOS:
         if self.findfiles:
             # Arquivos
             files = [_f for _f in self.findfiles if not _f[0][0] == '#']
-            print "Precisamos de %d arquivo(s)...\n" % (len(files))
+            print("Precisamos de %d arquivo(s)...\n" % len(files))
             for entry in files:
                 fname, freg = entry
                 outfname, outdata = findfilel(self.inputpath, fname, freg)
@@ -42,20 +43,20 @@ class BaseSISPOS:
                         self.inputfiles[fname] = outfname
                     else:
                         self.inputfiles[fname] = outdata
-                print ""
+                print("")
 
             # Perguntas
             questions = [_q for _q in self.findfiles if _q[0][0] == '#']
-            print "Precisamos fazer %d pergunta(s)...\n" % (len(questions))
+            print("Precisamos fazer %d pergunta(s)...\n" % (len(questions)))
             for entry in questions:
                 fname, fquestionprompt = entry
-                outdata = raw_input(fquestionprompt+" ? ")
+                outdata = input(fquestionprompt+" ? ")
                 if outdata:
                     self.inputfiles[fname] = outdata
                 elif fname[1] == "#":
-                    print "Pergunta opcional, deixada em branco [ok]."
+                    print("Pergunta opcional, deixada em branco [ok].")
                     self.inputfiles[fname] = ''
-                print ""
+                print("")
 
             # Garantir que temos tudo que precisamos
             try:
@@ -66,17 +67,17 @@ class BaseSISPOS:
                 self.canrun = False
 
         else:
-            print "Sem arquivos de entrada"
+            print("Sem arquivos de entrada")
 
     def run(self):
         if self.canrun:
             retval = self.process(self.inputfiles)
             self.closeall()
-            raw_input("\n\n---- Fim do processamento, pressione ENTER ----")
+            input("\n\n---- Fim do processamento, pressione ENTER ----")
             return retval
         else:
-            print "ERRO: O modulo nao pode ser executado pois faltam arquivos de entrada!"
-            raw_input("--pressione enter--")
+            print("ERRO: O modulo nao pode ser executado pois faltam arquivos de entrada!")
+            input("--pressione enter--")
             exit(1)
 
     def getoutputfile(self, append='', ext="txt", fmode='w'):
@@ -99,10 +100,10 @@ class BaseSISPOS:
 
     def process (self, f):
         ## OVERRIDE THIS FUNCTION TO PROCESS FILES
-        print "\n-------------------"
-        print "process():"
-        print "I found %d file(s)" % (len(f))
-        print "Override me so i can do something..."
-        print "-------------------\n"
+        print("\n-------------------")
+        print("process():")
+        print("I found %d file(s)" % (len(f)))
+        print("Override me so i can do something...")
+        print("-------------------\n")
 
 

@@ -4,9 +4,9 @@ import re
 import locale
 
 def findfile(_searchdirectory, idname, regexp):
-    searchdirectory = unicode(_searchdirectory)
+    searchdirectory = _searchdirectory
     retval = ""
-    print "Procurando por %s dentro de \"%s\"..." % (idname.upper(), searchdirectory)
+    print("Procurando por %s dentro de \"%s\"..." % (idname.upper(), searchdirectory))
     flist = os.listdir(searchdirectory)
     flist.sort()
     compre = re.compile(regexp, re.IGNORECASE)
@@ -15,13 +15,13 @@ def findfile(_searchdirectory, idname, regexp):
 
     for fname in matches:
         question = u"  O arquivo %s e realmente o arquivo \"%s\"? [s/n]:" % (idname.upper(), os.path.basename(fname))
-        print question,
-        if raw_input().upper() == "S":
+        print(question,)
+        if input().upper() == "S":
             retval = fname
             break
 
     if not retval:
-        print u"\tNao pude encontrar um arquivo com o nome procurado..."
+        print("\tNao pude encontrar um arquivo com o nome procurado...")
 
     return retval
 
