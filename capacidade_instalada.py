@@ -1,4 +1,4 @@
-#!python2
+#!python3
 # -*- coding: cp1252 -*-
 import os
 import re
@@ -14,9 +14,9 @@ class CapacidadeInstalada(BaseSISPOS):
 
     def process (self, f):
         # Strip newlines and carriage returns
-        f['HTOT'] = re.sub(r'[\r\n]', ' ', f['HTOT'])
-        f['HEFET'] = re.sub(r'[\r\n]', ' ', f['HEFET'])
-        f['HDISP'] = re.sub(r'[\r\n]', ' ', f['HDISP'])
+        f['HTOT'] = re.sub(r'[\r\n]', ' ', f['HTOT'].decode())
+        f['HEFET'] = re.sub(r'[\r\n]', ' ', f['HEFET'].decode())
+        f['HDISP'] = re.sub(r'[\r\n]', ' ', f['HDISP'].decode())
         
         # Horas totais
         ipcuc_htot = float(re.search(r'total_IPCUC_HTOT.+?([0-9]{1,9}\,[0-9]{2})', f['HTOT']).group(1)
@@ -94,13 +94,13 @@ class CapacidadeInstalada(BaseSISPOS):
         o1.write(' INDICE = -------------------------- = %.0f%%\n' % (indice_total))
         o1.write('                HORAS TOTAIS\n')
         
-        # Arquivo de Saída #2 -- CAPAC Dario (Sem IQ)
-        o2 = self.getoutputfile(append='%s-%s_DARIO' % (f['#MES'], f['#ANO']))
+        # Arquivo de Saída #2 -- CAPAC Sem IQ
+        o2 = self.getoutputfile(append='%s-%s_SEM_IQ' % (f['#MES'], f['#ANO']))
         
         o2.write("\n")
         o2.write("\t\tNUCLEBRAS EQUIPAMENTOS PESADOS S.A. - NUCLEP\n")
         o2.write("\tGERENCIA DE CONTROLE - ICC\n\n")
-        o2.write("CAPACIDADE INSTALADA (Dario) - %s/%s\n\n" % (f['#MES'], f['#ANO']))
+        o2.write("CAPACIDADE INSTALADA (Sem IQ) - %s/%s\n\n" % (f['#MES'], f['#ANO']))
 
         o2.write("HORAS DISPONIVEIS:\n")
         o2.write("\tDATA DE FECHAMENTO:\t%s\n\n" % (fech_hdisp))
@@ -130,6 +130,6 @@ class CapacidadeInstalada(BaseSISPOS):
         o2.write(' INDICE = -------------------------- = %.0f%%\n' % (indice_dario))
         o2.write('                HORAS TOTAIS\n')
         
-                
-a = CapacidadeInstalada()
-a.run()
+if __name__ == "__main__":
+    a = CapacidadeInstalada()
+    a.run()

@@ -1,4 +1,4 @@
-#!python2
+#!python3
 # -*- coding: cp1252 -*-
 import os
 import re
@@ -13,8 +13,8 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
 
     def process (self, f):
         # Strip newlines and carriage returns
-        f['HEFET'] = re.sub(r'[\r\n]', ' ', f['HEFET'])
-        f['HDISP'] = re.sub(r'[\r\n]', ' ', f['HDISP'])
+        f['HEFET'] = re.sub(r'[\r\n]', ' ', f['HEFET'].decode())
+        f['HDISP'] = re.sub(r'[\r\n]', ' ', f['HDISP'].decode())
 
         fe = f['HEFET']
         fd = f['HDISP']
@@ -75,6 +75,7 @@ class IndiceOcupacaoMaoObra(BaseSISPOS):
         o1.write(' INDICE = -------------------------- = %.0f%%\n' % ((total_hefet/total_hdisp)*100))
         o1.write('                HORAS DISPONIVEIS\n')
         
-                
-a = IndiceOcupacaoMaoObra()
-a.run()
+
+if __name__ == "__main__":
+    a = IndiceOcupacaoMaoObra()
+    a.run()
