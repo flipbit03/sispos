@@ -1,3 +1,4 @@
+#python3
 # -*- coding: cp1252 -*-
 import os
 import re
@@ -14,8 +15,9 @@ def findfile(_searchdirectory, idname, regexp):
     matches = filter(lambda x: compre.search(os.path.basename(x)), arqs)
 
     for fname in matches:
-        question = u"  O arquivo %s e realmente o arquivo \"%s\"? [s/n]:" % (idname.upper(), os.path.basename(fname))
-        print(question,)
+        #question = " O arquivo {idname.upper()}"
+        question = f' O arquivo {idname.upper()} é realmente o arquivo {os.path.basename(fname)}? [s/n]:'
+        print(question, end=' ')
         if input().upper() == "S":
             retval = fname
             break
