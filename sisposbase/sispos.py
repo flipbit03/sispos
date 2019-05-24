@@ -2,14 +2,16 @@
 # -*- coding: cp1252 -*-
 import os
 from .filefinder import findfile, findfilel
+from sisposbase.get_sql_data import get_periodo_data, get_periodo_additional_data
 
 INPUTPATH = os.path.join(os.getcwd(), "inputs")
 OUTPUTPATH = os.path.join(os.getcwd(), "outputs")
 
+
 class BaseSISPOS:
-    #FILL THIS IN
+    # FILL THIS IN
     findfiles = []
-    
+
     inputpath = INPUTPATH
     outputpath = OUTPUTPATH
     inputfiles = {}
@@ -18,10 +20,10 @@ class BaseSISPOS:
     canrun = False
     outputfileno = 0
 
-    # Override me to dynamically add files to findfiles 
+    # Override me to dynamically add files to findfiles
     def dynfindfiles(self):
-        pass #self.findfiles.append ( (xx,xx) )...
-    
+        pass  # self.findfiles.append ( (xx,xx) )...
+
     def __init__(self):
         print("-----------------------------")
         print("SISPOS - Modulo %s" % (self.__class__.__name__))
@@ -30,10 +32,10 @@ class BaseSISPOS:
 
         # Call this function to populate dynamically self.findfiles
         self.dynfindfiles()
-        
+
         if self.findfiles:
             # Arquivos
-            files = [_f for _f in self.findfiles if not _f[0][0] == '#']
+            files = [_f for _f in self.findfiles if not _f[0][0] == "#"]
             print("Precisamos de %d arquivo(s)...\n" % len(files))
             for entry in files:
                 fname, freg = entry
@@ -46,16 +48,23 @@ class BaseSISPOS:
                 print("")
 
             # Perguntas
-            questions = [_q for _q in self.findfiles if _q[0][0] == '#']
+            questions = [_q for _q in self.findfiles if _q[0][0] == "#"]
             print("Precisamos fazer %d pergunta(s)...\n" % (len(questions)))
             for entry in questions:
                 fname, fquestionprompt = entry
-                outdata = input(fquestionprompt+" ? ")
-                if outdata:
-                    self.inputfiles[fname] = outdata
-                elif fname[1] == "#":
-                    print("Pergunta opcional, deixada em branco [ok].")
-                    self.inputfiles[fname] = ''
+
+                if callable(fquestionprompt):
+                    # Instead of asking the question, call the method to fill the data.
+                    self.inputfiles[fname] = fquestionprompt(self)
+
+                else:
+                    # Ask question
+                    outdata = input(fquestionprompt + " ? ")
+                    if outdata:
+                        self.inputfiles[fname] = outdata
+                    elif fname[1] == "#":
+                        print("Pergunta opcional, deixada em branco [ok].")
+                        self.inputfiles[fname] = ""
                 print("")
 
             # Garantir que temos tudo que precisamos
@@ -76,19 +85,26 @@ class BaseSISPOS:
             input("\n\n---- Fim do processamento, pressione ENTER ----")
             return retval
         else:
-            print("ERRO: O modulo nao pode ser executado pois faltam arquivos de entrada!")
+            print(
+                "ERRO: O modulo nao pode ser executado pois faltam arquivos de entrada!"
+            )
             input("--pressione enter--")
             exit(1)
 
-    def getoutputfile(self, append='', ext="txt", fmode='w'):
-        fname = "%s_%s_%d.%s" % (self.__class__.__name__, append, self.outputfileno, ext)
+    def getoutputfile(self, append="", ext="txt", fmode="w"):
+        fname = "%s_%s_%d.%s" % (
+            self.__class__.__name__,
+            append,
+            self.outputfileno,
+            ext,
+        )
         self.outputfileno += 1
         fpath = os.path.join(self.outputpath, fname)
 
-        #open file
+        # open file
         ofile = open(fpath, fmode)
 
-        #insert the reference into a dictionary as well (for closing everything later)
+        # insert the reference into a dictionary as well (for closing everything later)
         self.outputfiles[self.outputfileno] = ofile
 
         return ofile
@@ -98,7 +114,7 @@ class BaseSISPOS:
             self.outputfiles[key].flush()
             self.outputfiles[key].close()
 
-    def process (self, f):
+    def process(self, f):
         ## OVERRIDE THIS FUNCTION TO PROCESS FILES
         print("\n-------------------")
         print("process():")
@@ -107,3 +123,43 @@ class BaseSISPOS:
         print("-------------------\n")
 
 
+class BaseSISPOSSQL(BaseSISPOS):
+    def pega_periodo_and_get_data(self):
+        periodoid, mes, ano, fechadoem, dtini, dtfim = periododata = get_periodo_data()
+
+        self.inputfiles["#PERIODOID"] = periodoid
+        self.inputfiles["#MES"] = mes
+        self.inputfiles["#ANO"] = ano
+        self.inputfiles["#DTINI"] = dtini
+        self.inputfiles["#DTFIM"] = dtfim
+
+        # Com o período escolhido, pega parametros adicionais.
+        dias_uteis, dias_1, dias_2 = get_periodo_additional_data(periodoid)
+
+        # Print and save DIASUTEIS
+        self.inputfiles["#DIASUTEIS"] = dias_uteis
+        print(f"\nDias úteis no período: {dias_uteis}\n")
+
+        if dias_1:
+            print("")
+            print(f"Feriados tipo=1:")
+            for l in dias_1:
+                print(f"{l[0]} / {l[1]}")
+            print("")
+
+        self.inputfiles["#DIAS1"] = dias_1
+
+        if dias_2:
+            print(f"Feriados tipo=2:")
+            for l in dias_2:
+                print(f"{l[0]} / {l[1]}")
+        self.inputfiles["#DIAS2"] = dias_2
+
+        print("")
+
+        return periododata
+
+    findfiles = (("#PERIODO", pega_periodo_and_get_data),)
+
+    def process(self, f):
+        pass

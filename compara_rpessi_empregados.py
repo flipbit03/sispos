@@ -8,6 +8,8 @@ import tempfile
 import warnings
 import locale
 from openpyxl import load_workbook
+
+from sisposbase.get_sql_data import getsqldata
 from sisposbase.sispos import BaseSISPOS
 
 warnings.filterwarnings('ignore')
@@ -208,29 +210,14 @@ class ComparaRpessiEmpregados(BaseSISPOS):
 
     def getempregdata(self):
 
-        tmpdir = tempfile.mkdtemp()
-
-        sqlfp = os.path.join(tmpdir, "sqlcode.sql")
-        with open(sqlfp, 'wb') as sqlf:
-            sqlf.write(sqlcode.encode())
-
-        outf = os.path.join(tmpdir, "out.txt")
-
-        # run it
-        os.system("{} {} {}".format(sqlrunner, sqlfp, outf))
-
-        with open(outf, 'rb') as data:
-            _ed = data.read().decode('windows-1252')
-
-        ed_split = _ed.strip().split('\r\n')
+        empregados_data = getsqldata(sqlcode)[0]
 
         retval = {}
-        for line in ed_split[1:]:
-            line_s = line.split("|")
-            line_s = [x.strip() for x in line_s]
+        for line in empregados_data[1:]:
+            line_s = [x.strip() for x in line]
 
             # matr, nome, codfunc, descricao, depto, tipo = linha
-            matr, nome, codfunc, descricao, depto, tipo, situacao, _ = line_s
+            matr, nome, codfunc, descricao, depto, tipo, situacao = line_s
 
             retval[matr] = {}
             retval[matr]['nome'] = nome
@@ -239,8 +226,6 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             retval[matr]['depto'] = depto
             retval[matr]['tipo'] = tipo
             retval[matr]['situacao'] = situacao
-
-        shutil.rmtree(tmpdir)
 
         return retval
 
