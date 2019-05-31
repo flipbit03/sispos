@@ -2,6 +2,7 @@
 import re, subprocess
 import os, tempfile, shutil
 import subprocess
+import datetime
 from collections import namedtuple
 
 # Executable path of the program that connects to the Database
@@ -33,10 +34,14 @@ def getsqldata(sqlcode: str):
     # Create TMPDIR
     tmpdir = tempfile.mkdtemp()
 
+    # Write sqlcode to TMPDIR
     sqlfp = os.path.join(tmpdir, "sqlcode.sql")
     with open(sqlfp, "wb") as sqlf:
-        sqlf.write(sqlcode.encode())
+        # encode sql code to "windows-1252" encoding, to properly handle accents.
+        sqlcode_encoded = sqlcode.encode("windows-1252")
+        sqlf.write(sqlcode_encoded)
 
+    # Create output file
     outf = os.path.join(tmpdir, "out.txt")
 
     # Run it!
@@ -79,6 +84,13 @@ def getsqldata(sqlcode: str):
     return retval
 
 
+def sql_substitute_variables(data, vd, d="@@"):
+    rv = data
+    for k in vd.keys():
+        rv = rv.replace(d + str(k) + d, str(vd[k]))
+    return rv
+
+
 def get_periodo_data():
     svar = {}
 
@@ -96,7 +108,7 @@ def get_periodo_data():
         perid, mes, ano, status, dtini, dtfim = entry
         dbd[int(perid)] = (mes, ano, status, dtini, dtfim)
 
-    #print("---\nEntre com os seguintes parametros:\n---")
+    # print("---\nEntre com os seguintes parametros:\n---")
 
     svar["PERIODO"] = le_int("ID DO PERIODO DE APROPRIACAO")
 
@@ -114,7 +126,11 @@ def get_periodo_data():
     return svar["PERIODO"], mes, ano, status, dtini, dtfim
 
 
-def get_periodo_additional_data(periodoid):
+from typing import List
+FeriadoTuple = namedtuple("FeriadoTuple", ['dia', 'descricao', 'tipohora'])
+
+
+def get_periodo_additional_data(periodoid) -> (int, List[FeriadoTuple], List[FeriadoTuple]):
     sqlcode = f"""
     -- 00parametros.sql
     -- Listagem dos Parâmetros de Digitação para o Período Selecionado
@@ -193,12 +209,17 @@ def get_periodo_additional_data(periodoid):
     # Type=1 and Type=2 holidays.
     dias_1 = []
     dias_2 = []
+
     for line in data[3][1:]:
         dia, descricao, tipohora = line
-        if int(tipohora) == 1:
-            dias_1.append(line)
 
-        if int(tipohora) == 2:
-            dias_2.append(line)
+        dia_datetime = datetime.datetime.strptime(dia, "%d/%m/%Y")
+        int_tipohora = int(tipohora)
+
+        if int_tipohora == 1:
+            dias_1.append(FeriadoTuple(dia_datetime, descricao, int_tipohora))
+
+        if int_tipohora == 2:
+            dias_2.append(FeriadoTuple(dia_datetime, descricao, int_tipohora))
 
     return dias_uteis, dias_1, dias_2
