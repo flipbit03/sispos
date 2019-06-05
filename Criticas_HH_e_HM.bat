@@ -1,1 +1,0 @@
-@py -3 "Criticas_HH_e_HM.py"

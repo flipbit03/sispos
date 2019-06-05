@@ -19,7 +19,10 @@ def lesplit(regex, prompt="", _input=""):
         a = _input
         print("{} --> {}".format(prompt, _input))
     else:
-        a = input(prompt + " --> ")
+        a = None
+        while not a:
+            a = input(prompt + " --> ")
+
     rec = re.compile(regex)
     return [a] + list(rec.match(a).groups())
 
@@ -114,7 +117,7 @@ def get_periodo_data():
 
     # error out if incorrect periodnumber
     if not svar["PERIODO"] in dbd.keys():
-        raise Exception("Periodo Invalido")
+        raise Exception("Periodo Invalido, escolha um ID válido de periodo")
 
     # from periodo de apropriacao infer other needed variables
     mes, ano, status, dtini, dtfim = dbd[svar["PERIODO"]]
@@ -127,10 +130,13 @@ def get_periodo_data():
 
 
 from typing import List
-FeriadoTuple = namedtuple("FeriadoTuple", ['dia', 'descricao', 'tipohora'])
+
+FeriadoTuple = namedtuple("FeriadoTuple", ["dia", "descricao", "tipohora"])
 
 
-def get_periodo_additional_data(periodoid) -> (int, List[FeriadoTuple], List[FeriadoTuple]):
+def get_periodo_additional_data(
+    periodoid
+) -> (int, List[FeriadoTuple], List[FeriadoTuple]):
     sqlcode = f"""
     -- 00parametros.sql
     -- Listagem dos Parâmetros de Digitação para o Período Selecionado

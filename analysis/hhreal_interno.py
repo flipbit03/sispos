@@ -1,9 +1,7 @@
 # -*- coding: cp1252 -*-
-import os
-import re
 
 # derive this from HHReal instead of BaseSISPOS
-from hhreal import HHReal
+from analysis.hhreal import HHReal
 
 class HHReal_Interno(HHReal):
     # ----------------------------------

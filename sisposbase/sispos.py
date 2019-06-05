@@ -6,6 +6,7 @@ from sisposbase.get_sql_data import get_periodo_data, get_periodo_additional_dat
 
 INPUTPATH = os.path.join(os.getcwd(), "inputs")
 OUTPUTPATH = os.path.join(os.getcwd(), "outputs")
+DATAFILEPATH = os.path.join(os.getcwd(), "datafiles")
 
 
 class BaseSISPOS:
@@ -14,11 +15,20 @@ class BaseSISPOS:
 
     inputpath = INPUTPATH
     outputpath = OUTPUTPATH
+    datafilepath = DATAFILEPATH
     inputfiles = {}
     outputfiles = {}
     txtlog = []
     canrun = False
     outputfileno = 0
+
+    def getdatafile(self, filename, encoding="windows-1252"):
+        fullpath = os.path.join(self.datafilepath, filename)
+        if not os.path.isfile(fullpath):
+            raise FileNotFoundError(fullpath)
+
+        with open(fullpath, "r", encoding=encoding) as f:
+            return f.read()
 
     # Override me to dynamically add files to findfiles
     def dynfindfiles(self):
@@ -26,7 +36,7 @@ class BaseSISPOS:
 
     def __init__(self):
         print("-----------------------------")
-        print("SISPOS - Modulo %s" % (self.__class__.__name__))
+        print("Modulo %s" % (self.__class__.__name__))
         print("-----------------------------")
         print("")
 
@@ -80,6 +90,7 @@ class BaseSISPOS:
 
     def run(self):
         if self.canrun:
+            print("Calculando...")
             retval = self.process(self.inputfiles)
             self.closeall()
             input("\n\n---- Fim do processamento, pressione ENTER ----")
@@ -127,6 +138,8 @@ class BaseSISPOSSQL(BaseSISPOS):
     def pega_periodo_and_get_data(self):
         periodoid, mes, ano, fechadoem, dtini, dtfim = periododata = get_periodo_data()
 
+        f = self.inputfiles
+
         self.inputfiles["#PERIODOID"] = periodoid
         self.inputfiles["#MES"] = mes
         self.inputfiles["#ANO"] = ano
@@ -136,9 +149,12 @@ class BaseSISPOSSQL(BaseSISPOS):
         # Com o período escolhido, pega parametros adicionais.
         dias_uteis, dias_1, dias_2 = get_periodo_additional_data(periodoid)
 
+        # Print chosen Period
+        print(f"\nPeríodo Selecionado --> {f['#MES']}/{f['#ANO']}")
+
         # Print and save DIASUTEIS
         self.inputfiles["#DIASUTEIS"] = dias_uteis
-        print(f"\nDias úteis no período: {dias_uteis}\n")
+        print(f"\nDias úteis neste período: {dias_uteis}")
 
         if dias_1:
             print("")

@@ -47,6 +47,8 @@ def cria_bancodedados(arquivoexterno):
 
 
 class Criticas(BaseSISPOSSQL):
+    """Busca por Erros na Digitação de HH e HM para correções antes do fechamento."""
+
     def gera_crimeshh(self):
 
         f = self.inputfiles
@@ -113,7 +115,7 @@ class Criticas(BaseSISPOSSQL):
 
             erro = False
 
-            ## Tipo Hora
+            # Tipo Hora
             tipohora = "?"
             if weekday in (0, 1, 2, 3, 4):
                 tipohora = 0
@@ -127,10 +129,10 @@ class Criticas(BaseSISPOSSQL):
             if _data in dias_2:
                 tipohora = 2
 
-            ## Separa informacoes do evento
+            # Separa informacoes do evento
             _turno, _htipo, _minutos = evento
 
-            ## Se TURNO=4 (21h) Regra especial.
+            # Se TURNO=4 (21h) Regra especial.
             # 1260 minutos = 21 horas
             if _turno == 4 and _htipo == 3 and _minutos != 21 * 60:
                 return True
@@ -138,7 +140,7 @@ class Criticas(BaseSISPOSSQL):
             if _turno == 4 and _htipo != 3:
                 return True
 
-            ## Dias
+            # Dias
             if tipohora in (0,):
 
                 if _htipo == 0 and _turno == 1:
