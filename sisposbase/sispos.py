@@ -90,10 +90,12 @@ class BaseSISPOS:
 
     def run(self):
         if self.canrun:
-            print("Calculando...")
+            print("Calculando...\n")
             retval = self.process(self.inputfiles)
-            self.closeall()
-            input("\n\n---- Fim do processamento, pressione ENTER ----")
+
+            # Fecha todos os arquivos que foram gerados e reporta em tela.
+            self.closeall_and_report_files()
+            input("\n---- Fim do processamento, pressione ENTER para finalizar o programa ----")
             return retval
         else:
             print(
@@ -120,10 +122,22 @@ class BaseSISPOS:
 
         return ofile
 
-    def closeall(self):
-        for key in self.outputfiles.keys():
-            self.outputfiles[key].flush()
-            self.outputfiles[key].close()
+    def closeall_and_report_files(self):
+        if self.outputfiles.keys():
+            print("##############################################################")
+            print(f"Análise {self.__class__.__name__} executada com sucesso.")
+            print("##############################################################\n")
+
+            print(f"Esta análise gerou {len(self.outputfiles)} arquivo(s):\n")
+            for key in self.outputfiles.keys():
+                fobj = self.outputfiles[key]
+                print(f"  {key} - {os.path.basename(fobj.name)}")
+                fobj.flush()
+                fobj.close()
+
+            print("\nOs arquivos estão disponíveis na seguinte pasta:")
+            print(f"\n  {self.outputpath}")
+            print("\n##############################################################")
 
     def process(self, f):
         ## OVERRIDE THIS FUNCTION TO PROCESS FILES
@@ -150,26 +164,24 @@ class BaseSISPOSSQL(BaseSISPOS):
         dias_uteis, dias_1, dias_2 = get_periodo_additional_data(periodoid)
 
         # Print chosen Period
-        print(f"\nPeríodo Selecionado --> {f['#MES']}/{f['#ANO']}")
+        print(f"\nPERÍODO SELECIONADO --> {f['#MES']}/{f['#ANO']}")
 
         # Print and save DIASUTEIS
         self.inputfiles["#DIASUTEIS"] = dias_uteis
-        print(f"\nDias úteis neste período: {dias_uteis}")
+        print(f"\nDIAS ÚTEIS NESTE PERÍODO --> {dias_uteis}")
 
-        if dias_1:
-            print("")
-            print(f"Feriados tipo=1:")
-            for l in dias_1:
-                print(f"{l[0]} / {l[1]}")
-            print("")
+        def lista_feriados(diasvar, tipodia):
+            if diasvar:
+                print("")
+                print(f"FERIADOS TIPO={tipodia}:")
+                for dia in diasvar:
+                    print(f"  {dia[0].strftime('%d/%m/%Y')} / {dia[1]}")
 
         self.inputfiles["#DIAS1"] = dias_1
+        lista_feriados(dias_1, 1)
 
-        if dias_2:
-            print(f"Feriados tipo=2:")
-            for l in dias_2:
-                print(f"{l[0]} / {l[1]}")
         self.inputfiles["#DIAS2"] = dias_2
+        lista_feriados(dias_2, 2)
 
         print("")
 
