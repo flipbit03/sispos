@@ -52,12 +52,18 @@ class SisposRunner:
                 exit(1)
 
         # No name? Print menu and ask for choice.
-        print("Escolha a ferramenta pelo número:\n---------------------------------")
+        print("Escolha a ferramenta pelo número:\n---------------------------------\n")
 
         runnables_by_number = {}
+
+        # Tamanho máximo
+        taman = 4
+
         for analysis_name, i in zip(self.menu, range(1, len(self.menu) + 1)):
             runnables_by_number[i] = self.menu[analysis_name]
-            print(f"({i}) {analysis_name} - {self.menu[analysis_name].__doc__}")
+
+            opnumero = f"[{i}]".ljust(taman)
+            print(f"{opnumero} {analysis_name}\n{' '.ljust(len(opnumero))} {self.menu[analysis_name].__doc__}\n")
         print("")
 
         ans = 0
