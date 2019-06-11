@@ -1,0 +1,6 @@
+{
+    "ig_hh.sql": "ig_hh_@@MESNUM@@@@ANONUM@@",
+    "ig_hm.sql": "ig_hm_@@MESNUM@@@@ANONUM@@",
+    "ig_reparoautoclave_hh.sql": "ig_reparoautoclave_hh_@@MESNUM@@@@ANONUM@@",
+    "ig_reparoautoclave_hm.sql": "ig_reparoautoclave_hm_@@MESNUM@@@@ANONUM@@"
+}

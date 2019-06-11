@@ -1,0 +1,3 @@
+@@MESNUM@@ = mês do periodo a ser executado
+@@ANONUM@@ = ano do período a ser executado
+@@PERIODO@@ = id do período a ser executado

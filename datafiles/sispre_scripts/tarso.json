@@ -1,0 +1,12 @@
+{
+    "00parametros.sql": "00parametros_@@MESNUM@@_@@ANONUM@@",
+    "apeitudo.sql": "apeitudo_HH_@@MESNUM@@@@ANONUM@@",
+    "apeitudohm.sql": "apeitudo_HM_@@MESNUM@@@@ANONUM@@",
+    "hhtotesp_emp.sql": "hhtotesp_emp_@@MESNUM@@@@ANONUM@@",
+    "hhtotespn.sql": "hhtotespn@@MESNUM@@@@ANONUM@@",
+    "hhtotesp3.sql": "hhtotesp3@@MESNUM@@@@ANONUM@@",
+    "ativ3.sql": "ATIV3_@@MESNUM@@@@ANONUM@@",
+    "ativn.sql": "ATIVN_@@MESNUM@@@@ANONUM@@",
+    "ativ_emp.sql": "ATIV_EMP_@@MESNUM@@@@ANONUM@@",
+    "lista_empregados_ativos.sql": "EMPREGADOS_ATIVOS_@@MESNUM@@@@ANONUM@@"
+}

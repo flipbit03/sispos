@@ -2,6 +2,9 @@ from sisposbase.sispos import BaseSISPOS
 
 # Importa todas as análises.
 
+# SISPRE - Lotes de Relatórios
+from .sispre import Sispre
+
 # IOMO / CAPACIDADE INSTALADA
 from .iomo_capacidadeinstalada import IomoCapac
 

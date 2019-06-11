@@ -1,0 +1,19 @@
+{
+    "00parametros.sql": "00parametros_@@MESNUM@@_@@ANONUM@@",
+    "OCIOSIDADE_NO_MES.sql": "OCIOSIDADE_NO_MES_@@MESNUM@@-@@ANONUM@@",
+    "MATR_33_NO_MES.sql": "MATR_33_NO_MES_@@MESNUM@@-@@ANONUM@@",
+    "QT_FAL_MES.sql": "QT_FAL_MES_@@MESNUM@@@@ANONUM@@",
+    "IP_HH.sql": "61-IP",
+    "IP_ATIV.sql": "62-IP",
+    "He_TOTAL.sql": "HE_TOTAL_@@MESNUM@@@@ANONUM@@",
+    "SGQ_TOTALFATURAVEL.sql": "SGQ_TOTALFATURAVEL_@@MESNUM@@@@ANONUM@@",
+    "SGQ_DISPONIVELPRODUTIVO.sql": "SGQ_DISPONIVELPRODUTIVO_@@MESNUM@@@@ANONUM@@",
+    "SGQ_DISPONIVELTOTAL.sql": "SGQ_DISPONIVELTOTAL_@@MESNUM@@@@ANONUM@@",
+    "SGQ_PERDAS.sql": "SGQ_PERDAS_@@MESNUM@@@@ANONUM@@",
+    "SGQ_HORASREPARO.sql": "SGQ_HORASREPARO_@@MESNUM@@@@ANONUM@@",
+    "FARETRAB.sql": "FARETRAB_@@MESNUM@@@@ANONUM@@",
+    "hmcli.sql": "hmcli_@@MESNUM@@@@ANONUM@@",
+    "hmoutr.sql": "hmoutr_@@MESNUM@@@@ANONUM@@",
+    "iomo_hdisp.sql": "SGQ_DISPONIVELFABRIL_@@MESNUM@@@@ANONUM@@",
+    "iomo_hefet.sql": "SGQ_EFETIVOFABRIL_@@MESNUM@@@@ANONUM@@"
+}

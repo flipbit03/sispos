@@ -1,12 +1,23 @@
 #!python3
 # -*- coding: cp1252 -*-
+import datetime
 import os
+import re
+import json
 from .filefinder import findfile, findfilel
 from sisposbase.get_sql_data import get_periodo_data, get_periodo_additional_data
 
-INPUTPATH = os.path.join(os.getcwd(), "inputs")
-OUTPUTPATH = os.path.join(os.getcwd(), "outputs")
-DATAFILEPATH = os.path.join(os.getcwd(), "datafiles")
+BASEPATH = os.getcwd()
+
+INPUTPATH = os.path.join(BASEPATH, "inputs")
+OUTPUTPATH = os.path.join(BASEPATH, "outputs")
+
+DATAFILEPATH = os.path.join(BASEPATH, "datafiles")
+TOOLFOLDER = os.path.join(BASEPATH, "tools")
+
+# Crie paths de INPUT e OUTPUT se eles não existirem.
+create_if_nonexistent = (INPUTPATH, OUTPUTPATH)
+[os.mkdir(x) for x in create_if_nonexistent if not os.path.exists(x)]
 
 
 class BaseSISPOS:
@@ -16,14 +27,17 @@ class BaseSISPOS:
     inputpath = INPUTPATH
     outputpath = OUTPUTPATH
     datafilepath = DATAFILEPATH
+
     inputfiles = {}
+
     outputfiles = {}
-    txtlog = []
-    canrun = False
     outputfileno = 0
 
-    def getdatafile(self, filename, encoding="windows-1252"):
-        fullpath = os.path.join(self.datafilepath, filename)
+    txtlog = []
+    canrun = False
+
+    def getdatafile(self, filename, encoding="windows-1252", inside=""):
+        fullpath = os.path.join(inside if inside else self.datafilepath, filename)
         if not os.path.isfile(fullpath):
             raise FileNotFoundError(fullpath)
 
@@ -36,7 +50,7 @@ class BaseSISPOS:
 
     def __init__(self):
         print("-----------------------------")
-        print("Modulo %s" % (self.__class__.__name__))
+        print(f"Modulo {self.__class__.__name__}")
         print("-----------------------------")
         print("")
 
@@ -95,7 +109,9 @@ class BaseSISPOS:
 
             # Fecha todos os arquivos que foram gerados e reporta em tela.
             self.closeall_and_report_files()
-            input("\n---- Fim do processamento, pressione ENTER para finalizar o programa ----")
+            input(
+                "\n---- Fim do processamento, pressione ENTER para finalizar o programa ----"
+            )
             return retval
         else:
             print(
@@ -104,23 +120,46 @@ class BaseSISPOS:
             input("--pressione enter--")
             exit(1)
 
-    def getoutputfile(self, append="", ext="txt", fmode="w"):
+    def getoutputfile(
+        self, append="", ext="txt", fmode="w", inside="", override_name="", encoding="windows-1252"
+    ):
         fname = "%s_%s_%d.%s" % (
             self.__class__.__name__,
             append,
             self.outputfileno,
             ext,
         )
+
         self.outputfileno += 1
-        fpath = os.path.join(self.outputpath, fname)
+        fpath = os.path.join(
+            inside if inside else self.outputpath,
+            override_name if override_name else fname,
+        )
 
         # open file
-        ofile = open(fpath, fmode)
+        ofile = open(fpath, fmode, encoding=encoding)
 
         # insert the reference into a dictionary as well (for closing everything later)
         self.outputfiles[self.outputfileno] = ofile
 
         return ofile
+
+    def getoutputfolder(self, append=""):
+        if self.outputpath != OUTPUTPATH:
+            raise Exception("A função getoutputfolder() só deve ser chamada UMA vez")
+
+        nowstr = datetime.datetime.now().strftime("%S")
+
+        newpath = f"{self.__class__.__name__.lower()}_{append}__{nowstr}"
+        newpath_out = os.path.join(OUTPUTPATH, newpath)
+
+        # Cria
+        os.mkdir(newpath_out)
+
+        # Substitui o outputpath para o novo
+        self.outputpath = newpath_out
+
+        return newpath_out
 
     def closeall_and_report_files(self):
         if self.outputfiles.keys():
@@ -140,7 +179,7 @@ class BaseSISPOS:
             print("\n##############################################################")
 
     def process(self, f):
-        ## OVERRIDE THIS FUNCTION TO PROCESS FILES
+        # OVERRIDE THIS FUNCTION TO PROCESS FILES
         print("\n-------------------")
         print("process():")
         print("I found %d file(s)" % (len(f)))

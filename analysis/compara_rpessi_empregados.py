@@ -12,7 +12,7 @@ from openpyxl import load_workbook
 from sisposbase.get_sql_data import getsqldata
 from sisposbase.sispos import BaseSISPOS
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 sqlcode = """
 SELECT 
@@ -36,8 +36,9 @@ where
 
 sqlrunner = os.path.join(os.getcwd(), "SingleSQLExecutor.exe")
 
+
 def levenshtein(s, t):
-    ''' From Wikipedia article; Iterative with two matrix rows. '''
+    """ From Wikipedia article; Iterative with two matrix rows. """
     if s == t:
         return 0
     elif len(s) == 0:
@@ -60,11 +61,11 @@ def levenshtein(s, t):
 
 
 class ComparaMNFDT(object):
-    TIPO_MO_DIRETA = '0'
-    TIPO_MO_INDIRETA = '1'
-    TIPO_MO_NAOAPROP = '2'
+    TIPO_MO_DIRETA = "0"
+    TIPO_MO_INDIRETA = "1"
+    TIPO_MO_NAOAPROP = "2"
 
-    SITUACAO_NCPDEMITIDO = '10'
+    SITUACAO_NCPDEMITIDO = "10"
 
     def __init__(self, rpessi, rpessiname, empregados, empregadosname):
 
@@ -86,7 +87,10 @@ class ComparaMNFDT(object):
         mudtxt = []
         rtxt = lambda x: mudtxt.append(str(x))
 
-        bannermsg = "000 Transformando a partir de \"%s\" para \"%s\"." % (self.empreg_name, self.rpessi_name)
+        bannermsg = '000 Transformando a partir de "%s" para "%s".' % (
+            self.empreg_name,
+            self.rpessi_name,
+        )
         rtxt(bannermsg)
 
         qtddif = 0
@@ -98,58 +102,99 @@ class ComparaMNFDT(object):
             if matr in empregdict:
 
                 # codfunc
-                if (codfunc != empregdict[matr]['codfunc']) and (descricao.find("(I)") == -1):
-                    muds.append("  CODFUNC | de %s(%s) para %s(%s)" % (empregdict[matr]['codfunc'],
-                                                                       empregdict[matr]['descricao'],
-                                                                       codfunc,
-                                                                       descricao))
-                    codfuncsql = "update empregados set codfunc = \"%s\" where matr = %s;" % (codfunc, matr)
+                if (codfunc != empregdict[matr]["codfunc"]) and (
+                    descricao.find("(I)") == -1
+                ):
+                    muds.append(
+                        "  CODFUNC | de %s(%s) para %s(%s)"
+                        % (
+                            empregdict[matr]["codfunc"],
+                            empregdict[matr]["descricao"],
+                            codfunc,
+                            descricao,
+                        )
+                    )
+                    codfuncsql = (
+                        'update empregados set codfunc = "%s" where matr = %s;'
+                        % (codfunc, matr)
+                    )
                     rsql(codfuncsql)
 
                 # departamento
-                if (depto != empregdict[matr]['depto']):
-                    if depto == "IT" and empregdict[matr]['depto'] == "IT-APRENDIZES":
+                if depto != empregdict[matr]["depto"]:
+                    if depto == "IT" and empregdict[matr]["depto"] == "IT-APRENDIZES":
                         pass
                     else:
-                        muds.append("  DEPTO | de \"%s\" para \"%s\"" % (empregdict[matr]['depto'],
-                                                                     depto))
-                        deptosql = "update empregados set depto = \"%s\" where matr = %s;" % (depto, matr)
+                        muds.append(
+                            '  DEPTO | de "%s" para "%s"'
+                            % (empregdict[matr]["depto"], depto)
+                        )
+                        deptosql = (
+                            'update empregados set depto = "%s" where matr = %s;'
+                            % (depto, matr)
+                        )
                         rsql(deptosql)
 
                 # tipo
-                if (tipo != empregdict[matr]['tipo']):
-                    if depto == "IT" and empregdict[matr]['depto'] == "IT-APRENDIZES":
+                if tipo != empregdict[matr]["tipo"]:
+                    if depto == "IT" and empregdict[matr]["depto"] == "IT-APRENDIZES":
                         pass
                     else:
-                        muds.append("  TIPO | de \"%s\" para \"%s\" [avaliar: %s %s/%s]" % (empregdict[matr]['tipo'],
-                                                                                            tipo,
-                                                                                            empregdict[matr]['depto'],
-                                                                                            descricao,
-                                                                                            empregdict[matr]['descricao']))
+                        muds.append(
+                            '  TIPO | de "%s" para "%s" [avaliar: %s %s/%s]'
+                            % (
+                                empregdict[matr]["tipo"],
+                                tipo,
+                                empregdict[matr]["depto"],
+                                descricao,
+                                empregdict[matr]["descricao"],
+                            )
+                        )
 
                 # situacao = demitido
-                if empregdict[matr]['situacao'] in (self.SITUACAO_NCPDEMITIDO,):
-                    muds.append(u"""  ---------
+                if empregdict[matr]["situacao"] in (self.SITUACAO_NCPDEMITIDO,):
+                    muds.append(
+                        u"""  ---------
     Atenção: matr %s consta como DEMITIDO na base -%s-:
     matr: %s / nome: %s
     codfunc: %s (%s)
     depto: %s / tipo: %s
-  ---------""" % (matr, self.empreg_name,
-                  matr, nome, codfunc, descricao, depto, tipo))
+  ---------"""
+                        % (
+                            matr,
+                            self.empreg_name,
+                            matr,
+                            nome,
+                            codfunc,
+                            descricao,
+                            depto,
+                            tipo,
+                        )
+                    )
 
             else:
                 if tipo != self.TIPO_MO_NAOAPROP:
-                    muds.append(u"""  ---------
+                    muds.append(
+                        u"""  ---------
     Atenção: matr %s nao existe na base -%s-:
     matr: %s / nome: %s
     codfunc: %s (%s)
     depto: %s / tipo: %s
-  ---------""" % (matr, self.empreg_name,
-                  matr, nome, codfunc, descricao, depto, tipo))
+  ---------"""
+                        % (
+                            matr,
+                            self.empreg_name,
+                            matr,
+                            nome,
+                            codfunc,
+                            descricao,
+                            depto,
+                            tipo,
+                        )
+                    )
 
             if muds:
-                rtxt("\nMATR: %s (%s):" % (str(matr).ljust(5),
-                                           nome.ljust(20)[0:17]))
+                rtxt("\nMATR: %s (%s):" % (str(matr).ljust(5), nome.ljust(20)[0:17]))
 
                 qtddif += len(muds)
 
@@ -160,7 +205,9 @@ class ComparaMNFDT(object):
 
 
 class ComparaRpessiEmpregados(BaseSISPOS):
-    findfiles = [('!RPESSI', r'RELAÇÃO.*EFETIVO.*\.xlsx'),]
+    """Compara a planilha [Relação de Pessoal do I] com a listagem de Empregados do ControleProducao"""
+
+    findfiles = [("!RPESSI", r"RELAÇÃO.*EFETIVO.*\.xlsx")]
 
     def getrpessidata(self, rpessifname):
 
@@ -189,7 +236,7 @@ class ComparaRpessiEmpregados(BaseSISPOS):
                     nameend = rowno - 1
                     # print u"Encontrado fim dos nomes na linha %d" % (nameend+1,)
 
-        employeelist = rows[namestart:nameend + 1]
+        employeelist = rows[namestart : nameend + 1]
 
         retval = []
         for employee in employeelist:
@@ -220,19 +267,19 @@ class ComparaRpessiEmpregados(BaseSISPOS):
             matr, nome, codfunc, descricao, depto, tipo, situacao = line_s
 
             retval[matr] = {}
-            retval[matr]['nome'] = nome
-            retval[matr]['codfunc'] = codfunc
-            retval[matr]['descricao'] = descricao
-            retval[matr]['depto'] = depto
-            retval[matr]['tipo'] = tipo
-            retval[matr]['situacao'] = situacao
+            retval[matr]["nome"] = nome
+            retval[matr]["codfunc"] = codfunc
+            retval[matr]["descricao"] = descricao
+            retval[matr]["depto"] = depto
+            retval[matr]["tipo"] = tipo
+            retval[matr]["situacao"] = situacao
 
         return retval
 
     def process(self, f):
 
         # Relacao de Pessoal do I (matriz)
-        rpessidata = self.getrpessidata(f['!RPESSI'])
+        rpessidata = self.getrpessidata(f["!RPESSI"])
 
         # Relacao de Empregados no Sistema (dicionario)
         empregdata = self.getempregdata()
@@ -241,7 +288,7 @@ class ComparaRpessiEmpregados(BaseSISPOS):
         # from code import interact; interact(local=locals())
 
         # Ativa o comparador
-        comp = ComparaMNFDT(rpessidata, "RPESSI", empregdata, "TABELA EMPREGADOS", )
+        comp = ComparaMNFDT(rpessidata, "RPESSI", empregdata, "TABELA EMPREGADOS")
 
         # Realiza comparação, grava resultados em mudtxt e mudsql, qtdmud = quantidade de mudanças
         mudtxt, mudsql, qtdmud = comp.compara()
@@ -249,19 +296,13 @@ class ComparaRpessiEmpregados(BaseSISPOS):
         print("----------------------------------------")
         print("%d diferença(s) detectadas..." % (qtdmud))
         print("----------------------------------------")
-
-        # from code import interact; interact(local=locals())
+        print("")
 
         if qtdmud:
             # Salvando em texto as mudanças textuais
-            txtfile = self.getoutputfile(append='txt')
+            txtfile = self.getoutputfile(append="txt")
             txtdata = u"\n".join(mudtxt)
             txtfile.write(txtdata)
-
-            # Salvando em texto as mudanças SQL
-            sqlfile = self.getoutputfile(append='sqlfile')
-            sqldata = u"\n".join(mudsql)
-            sqlfile.write(sqldata)
 
 
 if __name__ == "__main__":

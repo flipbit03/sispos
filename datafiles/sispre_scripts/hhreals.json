@@ -1,0 +1,5 @@
+{
+    "hhreal.sql": "hhreal_@@MESABREV@@@@ANONUM@@",
+    "hm_por_os.sql": "hm_por_os_@@MESABREV@@@@ANONUM@@",
+    "hhreal_interno.sql": "hhreal_interno_@@MESABREV@@@@ANONUM@@"
+}
