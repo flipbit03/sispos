@@ -63,7 +63,7 @@ class SisposRunner:
             runnables_by_number[i] = self.menu[analysis_name]
 
             opnumero = f"[{i}]".ljust(taman)
-            print(f"{opnumero} {analysis_name}\n{' '.ljust(len(opnumero))} {self.menu[analysis_name].__doc__}\n")
+            print(f"{opnumero} \"{analysis_name}\"\n{' '.ljust(len(opnumero))} {self.menu[analysis_name].__doc__}\n")
         print("")
 
         ans = 0
