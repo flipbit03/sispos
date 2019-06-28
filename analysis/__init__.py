@@ -18,6 +18,9 @@ try:
 except ImportError:
     pass
 
+# ORÇADO X REAL
+# from .hhreal import HHReal
+
 
 # Gera a lista de análises listadas aqui, para importação no módulo principal.
 analysis_list = sorted(

@@ -568,7 +568,7 @@ background-color: red;
         # ###############
 
         if unknownhours:
-            print "\n****\nAviso: Horas DESCONHECIDAS encontradas, Verificar!\n****"
+            print("\n****\nAviso: Horas DESCONHECIDAS encontradas, Verificar!\n****")
 
             unk_nodup = list(set(unknownhours))
 
