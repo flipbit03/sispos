@@ -27,10 +27,10 @@ where
 	and e.fkDepartamento = dep.pkDepartamento
 	and dep.sigla in
 	('IP', 'IPL',
-	'IPM', 
+	'IPM', 'IPM-AAMM', 'IPM-AAME',
 	'IPS', 'IPS/S', 'IPS/TT',
 	'IPU', 'IPU/C', 'IPU/F', 'IPU/U',
-	'IPC', 'IPC/M', 'IPC/T', 'IPC/C', 'IPC/MC', 'IPC/JP')
+	'IPC', 'IPC/M', 'IPC/T', 'IPC/C', 'IPC/MC', 'IPC/JP', 'IPC-IF')
 
 	-- escolha o periodo
 	and a.fkPeriodo = p.pkPeriodo
@@ -61,10 +61,10 @@ where
 	and e.fkDepartamento = dep.pkDepartamento
 	and dep.sigla in
 	('IP', 'IPL',
-	'IPM', 
+	'IPM', 'IPM-AAMM', 'IPM-AAME',
 	'IPS', 'IPS/S', 'IPS/TT',
 	'IPU', 'IPU/C', 'IPU/F', 'IPU/U',
-	'IPC', 'IPC/M', 'IPC/T', 'IPC/C', 'IPC/MC', 'IPC/JP')
+	'IPC', 'IPC/M', 'IPC/T', 'IPC/C', 'IPC/MC', 'IPC/JP', 'IPC-IF')
 
 	-- escolha o periodo
 	and a.fkPeriodo = p.pkPeriodo

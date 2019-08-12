@@ -405,7 +405,7 @@ background-color: red;
             return (categ, '')
 
         # IQ
-        if depto in ("IQ"):
+        if depto in ("IQ", "IQI", "IQ-LAB"):
             categ = self.catICQ
             return (categ, '')
 

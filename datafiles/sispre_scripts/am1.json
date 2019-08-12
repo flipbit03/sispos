@@ -12,10 +12,6 @@
     "SGQ_PERDAS.sql": "SGQ_PERDAS_@@MESNUM@@@@ANONUM@@",
     "SGQ_HORASREPARO.sql": "SGQ_HORASREPARO_@@MESNUM@@@@ANONUM@@",
     "FARETRAB.sql": "FARETRAB_@@MESNUM@@@@ANONUM@@",
-    "hmcli.sql": "hmcli_@@MESNUM@@@@ANONUM@@",
-    "hmoutr.sql": "hmoutr_@@MESNUM@@@@ANONUM@@",
-    "iomo_hdisp.sql": "SGQ_DISPONIVELFABRIL_@@MESNUM@@@@ANONUM@@",
-    "iomo_hefet.sql": "SGQ_EFETIVOFABRIL_@@MESNUM@@@@ANONUM@@",
 	"hhreal_novo.sql": "HHREAL_@@MESNUM@@@@ANONUM@@",
 	"hmreal_novo.sql": "HMREAL_@@MESNUM@@@@ANONUM@@"
 }
