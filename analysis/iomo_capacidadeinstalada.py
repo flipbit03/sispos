@@ -65,7 +65,7 @@ class IomoCapac(BaseSISPOSSQL):
                 "IPC/MC",
                 "IPC/JP",
             ),
-            "IQ": ("IQ", "IQ-IT"),
+            "IQ": ("IQ", "IQI"),
         }
 
         def depto_index(table, value: str):
