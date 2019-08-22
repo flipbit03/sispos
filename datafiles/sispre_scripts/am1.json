@@ -13,5 +13,6 @@
     "SGQ_HORASREPARO.sql": "SGQ_HORASREPARO_@@MESNUM@@@@ANONUM@@",
     "FARETRAB.sql": "FARETRAB_@@MESNUM@@@@ANONUM@@",
 	"hhreal_novo.sql": "HHREAL_@@MESNUM@@@@ANONUM@@",
-	"hmreal_novo.sql": "HMREAL_@@MESNUM@@@@ANONUM@@"
+	"hmreal_novo.sql": "HMREAL_@@MESNUM@@@@ANONUM@@",
+	"VERIFICA_DIG.sql": "VERIFICA_DIG_@@MESNUM@@@@ANONUM@@"
 }
